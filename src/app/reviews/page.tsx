@@ -1,0 +1,89 @@
+import type { Metadata } from "next";
+import { ReviewCard } from "@/components/reviews/review-card";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { TrustBadges } from "@/components/ui/trust-badges";
+import { Button } from "@/components/ui/button";
+import { getApprovedReviews, getAverageRating } from "@/lib/mock-data";
+
+export const metadata: Metadata = {
+  title: "Guest Reviews",
+  description:
+    "Read guest reviews for Victoria Hotel Apartment in Addis Ababa. Real feedback from travelers worldwide.",
+};
+
+export default function ReviewsPage() {
+  const reviews = getApprovedReviews();
+  const avgRating = getAverageRating();
+
+  const ratingCounts = [5, 4, 3, 2, 1].map((star) => ({
+    star,
+    count: reviews.filter((r) => r.rating === star).length,
+  }));
+
+  return (
+    <>
+      <section className="bg-charcoal text-white pt-28 pb-16 -mt-16 lg:-mt-[6.25rem]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="section-label text-bronze-light mb-3">Testimonials</p>
+          <h1 className="font-serif text-4xl lg:text-5xl font-normal mb-4">
+            Guest Reviews
+          </h1>
+          <p className="font-serif text-5xl text-bronze-light">{avgRating}</p>
+          <p className="text-white/50 text-sm mt-2">
+            Based on {reviews.length} verified reviews
+          </p>
+        </div>
+      </section>
+
+      <section className="py-12 bg-warm-gray">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <TrustBadges />
+        </div>
+      </section>
+
+      <section className="py-16 lg:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+            <div className="bg-white border border-stone p-6 h-fit">
+              <h3 className="text-xs tracking-[0.15em] uppercase text-muted font-semibold mb-5">
+                Rating Breakdown
+              </h3>
+              {ratingCounts.map(({ star, count }) => (
+                <div key={star} className="flex items-center gap-2 mb-3 text-sm">
+                  <span className="w-3 text-muted">{star}</span>
+                  <span className="text-bronze text-xs">★</span>
+                  <div className="flex-1 h-1.5 bg-warm-gray overflow-hidden">
+                    <div
+                      className="h-full bg-bronze"
+                      style={{
+                        width: `${
+                          reviews.length ? (count / reviews.length) * 100 : 0
+                        }%`,
+                      }}
+                    />
+                  </div>
+                  <span className="w-6 text-muted text-xs">{count}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-8">
+              {reviews.map((review) => (
+                <ReviewCard key={review.id} review={review} />
+              ))}
+            </div>
+          </div>
+
+          <div className="text-center mt-16">
+            <SectionHeading
+              title="Ready to experience it yourself?"
+              align="center"
+              className="mb-6"
+            />
+            <Button href="/book">Book Your Stay</Button>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

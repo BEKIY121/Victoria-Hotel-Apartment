@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+@theme {
+  --color-charcoal: #1a1a1a;
+  --color-charcoal-light: #2d2d2d;
+  --color-warm-white: #faf9f7;
+  --color-warm-gray: #f3f1ed;
+  --color-stone: #e8e4de;
+  --color-muted: #6b6560;
+  --color-bronze: #b8956a;
+  --color-bronze-light: #d4b896;
+  --color-bronze-dark: #96754a;
+  --font-serif: var(--font-playfair), "Georgia", serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-warm-white);
+  color: var(--color-charcoal);
+  font-family: var(--font-sans);
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-display {
+  font-family: var(--font-serif);
+  letter-spacing: -0.02em;
+}
+
+/* Loft-style section label */
+.section-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-bronze);
+  font-weight: 500;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--color-charcoal);
+}
+
+.section-subtitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-muted);
+  font-size: 1.125rem;
+}
+
+/* Hyatt-style booking bar */
+.booking-bar {
+  background: white;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--color-stone);
+}
+
+.booking-field {
+  position: relative;
+  padding: 1rem 1.25rem;
+  border-right: 1px solid var(--color-stone);
+}
+
+.booking-field:last-of-type {
+  border-right: none;
+}
+
+.booking-field label {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+
+.booking-field input,
+.booking-field select {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-charcoal);
+  outline: none;
+}
+
+/* Room showcase hover - Loft style */
+.room-showcase-image {
+  transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.room-showcase:hover .room-showcase-image {
+  transform: scale(1.05);
+}
+
+.room-showcase-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(26, 26, 26, 0.85) 0%,
+    rgba(26, 26, 26, 0.2) 50%,
+    transparent 100%
+  );
+}
+
+/* Card & animations */
+.card-luxury {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-luxury:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s ease-out forwards;
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+  }
+}
+
+.whatsapp-pulse {
+  animation: pulse-soft 2.5s infinite;
+}
+
+/* Stat counter - Loft style */
+.stat-number {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: 300;
+  line-height: 1;
+  color: var(--color-bronze);
+}
+
+/* Trust badge */
+.trust-badge {
+  border: 1px solid var(--color-stone);
+  background: white;
+  transition: border-color 0.2s;
+}
+
+.trust-badge:hover {
+  border-color: var(--color-bronze);
+}
+
+/* Booking step indicator - Hyatt style */
+.booking-step-active {
+  background: var(--color-charcoal);
+  color: white;
+}
+
+.booking-step-done {
+  background: var(--color-bronze);
+  color: white;
+}
+
+.booking-step-pending {
+  background: var(--color-warm-gray);
+  color: var(--color-muted);
+}
+
+/* Divider ornament */
+.divider-ornament::before,
+.divider-ornament::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-stone);
+}
+
+/* Scroll to top */
+.scroll-top {
+  background: var(--color-charcoal);
+  color: white;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.scroll-top:hover {
+  background: var(--color-bronze-dark);
+  transform: translateY(-2px);
+}
