@@ -17,7 +17,7 @@ export default function AboutPage() {
     <>
       <section className="relative min-h-[50vh] flex items-end -mt-16 lg:-mt-[6.25rem]">
         <Image
-          src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=80"
+          src="/images/gallery/lobby/01.webp"
           alt="Victoria Hotel Apartments"
           fill
           className="object-cover"
@@ -50,7 +50,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="relative aspect-[4/5] max-w-md mx-auto lg:mx-0">
               <Image
-                src="https://images.unsplash.com/photo-1560250097-0b9352d8c311a?w=600&q=80"
+                src="/images/gallery/property/01.webp"
                 alt={siteSettings.managerName}
                 fill
                 className="object-cover"

@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { BookingWidget } from "@/components/booking/booking-widget";
 import {
   getRoomBySlug,
-  roomTypes,
-  seasonalPricing,
-} from "@/lib/mock-data";
+  getRoomTypes,
+  getSeasonalPricing,
+} from "@/lib/data/rooms";
 import { getStartingPrice } from "@/lib/pricing";
 import { formatPrice } from "@/lib/utils";
 
@@ -18,19 +18,23 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  return roomTypes.map((r) => ({ slug: r.slug }));
+  const rooms = await getRoomTypes();
+  return rooms.map((r) => ({ slug: r.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const room = getRoomBySlug(slug);
+  const room = await getRoomBySlug(slug);
   if (!room) return { title: "Room Not Found" };
   return { title: room.name, description: room.description };
 }
 
 export default async function RoomDetailPage({ params }: Props) {
   const { slug } = await params;
-  const room = getRoomBySlug(slug);
+  const [room, seasonalPricing] = await Promise.all([
+    getRoomBySlug(slug),
+    getSeasonalPricing(),
+  ]);
   if (!room) notFound();
 
   const startingPrice = getStartingPrice(room, seasonalPricing);
@@ -136,7 +140,7 @@ export default async function RoomDetailPage({ params }: Props) {
 
                 <div className="mt-8 pt-6 border-t border-white/10 text-xs text-white/50 leading-relaxed">
                   Free cancellation up to 24 hours before arrival.
-                  Pay on arrival. WhatsApp confirmation included.
+                  Secure online payment via Stripe. WhatsApp confirmation included.
                 </div>
               </div>
             </div>

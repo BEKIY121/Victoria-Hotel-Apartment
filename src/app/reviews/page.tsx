@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
 import { ReviewCard } from "@/components/reviews/review-card";
+import { ReviewForm } from "@/components/reviews/review-form";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { TrustBadges } from "@/components/ui/trust-badges";
 import { Button } from "@/components/ui/button";
-import { getApprovedReviews, getAverageRating } from "@/lib/mock-data";
+import { getApprovedReviews, getAverageRating } from "@/lib/data/reviews";
+import { getRoomTypes } from "@/lib/data/rooms";
 
 export const metadata: Metadata = {
   title: "Guest Reviews",
   description:
-    "Read guest reviews for Victoria Hotel Apartment in Addis Ababa. Real feedback from travelers worldwide.",
+    "Read guest reviews for Victoria Hotel Apartments in Addis Ababa. Real feedback from travelers worldwide.",
 };
 
-export default function ReviewsPage() {
-  const reviews = getApprovedReviews();
-  const avgRating = getAverageRating();
+export default async function ReviewsPage() {
+  const [reviews, avgRating, roomTypes] = await Promise.all([
+    getApprovedReviews(),
+    getAverageRating(),
+    getRoomTypes(),
+  ]);
 
   const ratingCounts = [5, 4, 3, 2, 1].map((star) => ({
     star,
@@ -72,6 +77,10 @@ export default function ReviewsPage() {
                 <ReviewCard key={review.id} review={review} />
               ))}
             </div>
+          </div>
+
+          <div className="mt-16 mb-16">
+            <ReviewForm rooms={roomTypes.map((r) => ({ id: r.id, name: r.name }))} />
           </div>
 
           <div className="text-center mt-16">

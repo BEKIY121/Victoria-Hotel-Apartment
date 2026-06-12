@@ -4,8 +4,14 @@ export function cn(...inputs: ClassValue[]) {
   return clsx(inputs);
 }
 
-export function formatPrice(amount: number, currency = "ETB"): string {
-  return `${currency} ${amount.toLocaleString()}`;
+export function formatPrice(amount: number, currency?: string): string {
+  const code = (currency ?? process.env.NEXT_PUBLIC_CURRENCY ?? process.env.STRIPE_CURRENCY ?? "usd").toLowerCase();
+
+  if (code === "usd") {
+    return `$${amount.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+  }
+
+  return `${code.toUpperCase()} ${amount.toLocaleString()}`;
 }
 
 export function formatDate(dateStr: string): string {

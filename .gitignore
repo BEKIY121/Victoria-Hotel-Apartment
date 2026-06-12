@@ -32,6 +32,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# original photo sources — run `npm run photos` to build public/images
+/new photos/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

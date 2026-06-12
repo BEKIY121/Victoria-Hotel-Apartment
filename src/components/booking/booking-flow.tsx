@@ -1,114 +1,125 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, useMemo, Suspense, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import {
-  Check,
   ChevronRight,
   ChevronLeft,
   AlertCircle,
-  Pencil,
-  ShieldCheck,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingCaptcha } from "@/components/booking/booking-captcha";
-import { BookingAdvantages } from "@/components/booking/booking-advantages";
-import {
-  roomTypes,
-  seasonalPricing,
-  siteSettings,
-  getRoomBySlug,
-  getAvailableCount,
-} from "@/lib/mock-data";
+import { siteSettings } from "@/lib/mock-data";
 import { nationalities } from "@/lib/nationalities";
 import { bookingNotes } from "@/lib/content";
-import { calculateStayTotal } from "@/lib/pricing";
-import {
-  formatPrice,
-  formatDate,
-  generateRefNumber,
-  nightsBetween,
-} from "@/lib/utils";
+import { formatPrice, formatDate, nightsBetween } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import type { BookingFormData } from "@/lib/types";
+
+interface AvailableRoom {
+  id: string;
+  slug: string;
+  name: string;
+  capacity: number;
+  bedType: string;
+  size: string;
+  images: string[];
+  shortDescription: string;
+  amenities: string[];
+  available: number;
+  totalPrice: number;
+  pricePerNight: number;
+}
 
 const STEPS = [
   { id: 0, label: "Dates & Guests", short: "When" },
   { id: 1, label: "Select Room", short: "Room" },
   { id: 2, label: "Your Details", short: "Details" },
-  { id: 3, label: "Confirm", short: "Confirm" },
+  { id: 3, label: "Pay & Confirm", short: "Pay" },
 ];
 
 const inputClass =
-  "w-full px-4 py-3.5 border border-stone bg-warm-white text-charcoal text-sm focus:outline-none focus:border-charcoal transition-colors";
+  "w-full px-4 py-3 border border-stone bg-white text-charcoal text-sm focus:outline-none focus:border-charcoal";
 
 function BookingFlowInner() {
   const searchParams = useSearchParams();
-
   const preRoom = searchParams.get("room");
   const preCheckIn = searchParams.get("checkIn") || "";
   const preCheckOut = searchParams.get("checkOut") || "";
   const preGuests = Number(searchParams.get("guests")) || 1;
+  const cancelled = searchParams.get("cancelled");
 
   const today = new Date().toISOString().slice(0, 10);
   const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
-  const hasPrefilledDates = !!(preCheckIn && preCheckOut);
-  const initialStep = preRoom && hasPrefilledDates ? 1 : hasPrefilledDates ? 1 : 0;
-
-  const [step, setStep] = useState(initialStep);
+  const [step, setStep] = useState(0);
   const [form, setForm] = useState<BookingFormData>({
     checkIn: preCheckIn || today,
     checkOut: preCheckOut || tomorrow,
     guests: preGuests,
-    roomTypeId: preRoom ? getRoomBySlug(preRoom)?.id || "" : "",
+    roomTypeId: "",
     guestName: "",
     email: "",
     nationality: "",
     phone: "",
     specialRequests: "",
   });
-  const [confirmed, setConfirmed] = useState(false);
-  const [refNumber, setRefNumber] = useState("");
+  const [availableRooms, setAvailableRooms] = useState<AvailableRoom[]>([]);
+  const [loadingRooms, setLoadingRooms] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
   const [captchaValid, setCaptchaValid] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState<{
+    code: string;
+    subtotal: number;
+    total: number;
+    savings: number;
+  } | null>(null);
+  const [promoError, setPromoError] = useState("");
+  const [validatingPromo, setValidatingPromo] = useState(false);
 
   const nights = nightsBetween(form.checkIn, form.checkOut);
+  const selectedRoom = availableRooms.find((r) => r.id === form.roomTypeId);
+  const subtotalAmount = selectedRoom?.totalPrice ?? 0;
+  const totalAmount = promoDiscount?.total ?? subtotalAmount;
 
-  const availableRooms = useMemo(() => {
-    if (!form.checkIn || !form.checkOut || nights === 0) return [];
-    return roomTypes
-      .filter((r) => r.capacity >= form.guests)
-      .map((r) => ({
-        ...r,
-        available: getAvailableCount(r.id, form.checkIn, form.checkOut),
-        total: calculateStayTotal(
-          r,
-          form.checkIn,
-          form.checkOut,
-          seasonalPricing
-        ),
-        nightly: Math.round(
-          calculateStayTotal(r, form.checkIn, form.checkOut, seasonalPricing) /
-            nights
-        ),
-      }))
-      .filter((r) => r.available > 0);
-  }, [form.checkIn, form.checkOut, form.guests, nights]);
+  useEffect(() => {
+    if (step !== 1 || nights <= 0) return;
 
-  const selectedRoom = roomTypes.find((r) => r.id === form.roomTypeId);
-  const totalAmount = selectedRoom
-    ? calculateStayTotal(
-        selectedRoom,
-        form.checkIn,
-        form.checkOut,
-        seasonalPricing
-      )
-    : 0;
+    let cancelledReq = false;
+    setLoadingRooms(true);
+    setSubmitError("");
 
-  // Clear room if no longer available when dates change
+    fetch(
+      `/api/availability?checkIn=${form.checkIn}&checkOut=${form.checkOut}&guests=${form.guests}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelledReq) return;
+        const rooms: AvailableRoom[] = data.rooms ?? [];
+        setAvailableRooms(rooms);
+
+        if (preRoom && !form.roomTypeId) {
+          const match = rooms.find((r) => r.slug === preRoom);
+          if (match) setForm((f) => ({ ...f, roomTypeId: match.id }));
+        }
+      })
+      .catch(() => {
+        if (!cancelledReq) setSubmitError("Could not load availability.");
+      })
+      .finally(() => {
+        if (!cancelledReq) setLoadingRooms(false);
+      });
+
+    return () => {
+      cancelledReq = true;
+    };
+  }, [step, form.checkIn, form.checkOut, form.guests, nights, preRoom, form.roomTypeId]);
+
   useEffect(() => {
     if (
       form.roomTypeId &&
@@ -117,6 +128,47 @@ function BookingFlowInner() {
       setForm((f) => ({ ...f, roomTypeId: "" }));
     }
   }, [availableRooms, form.roomTypeId]);
+
+  useEffect(() => {
+    setPromoDiscount(null);
+    setPromoError("");
+    setForm((f) => ({ ...f, promoCode: undefined }));
+  }, [form.roomTypeId, form.checkIn, form.checkOut]);
+
+  async function applyPromo() {
+    if (!promoCode.trim() || !form.roomTypeId) return;
+    setValidatingPromo(true);
+    setPromoError("");
+    try {
+      const res = await fetch("/api/promotions/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: promoCode,
+          roomTypeId: form.roomTypeId,
+          checkIn: form.checkIn,
+          checkOut: form.checkOut,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPromoDiscount(null);
+        setPromoError(data.error || "Invalid promo code");
+        return;
+      }
+      setPromoDiscount({
+        code: data.code,
+        subtotal: data.subtotal,
+        total: data.total,
+        savings: data.savings,
+      });
+      setForm((f) => ({ ...f, promoCode: data.code }));
+    } catch {
+      setPromoError("Could not validate promo code");
+    } finally {
+      setValidatingPromo(false);
+    }
+  }
 
   function canProceed(): boolean {
     switch (step) {
@@ -131,607 +183,228 @@ function BookingFlowInner() {
           form.nationality.length > 0
         );
       case 3:
-        return captchaValid;
+        return captchaValid && !submitting;
       default:
         return false;
     }
   }
 
-  function handleConfirm() {
-    if (!captchaValid) return;
-    setRefNumber(generateRefNumber());
-    setConfirmed(true);
-  }
+  async function handleConfirm() {
+    if (!captchaValid || submitting) return;
+    setSubmitting(true);
+    setSubmitError("");
 
-  function goToStep(target: number) {
-    if (target < step || confirmed) setStep(target);
-  }
+    try {
+      const res = await fetch("/api/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
 
-  if (confirmed) {
-    return (
-      <div className="max-w-2xl mx-auto animate-fade-up">
-        <div className="bg-white border border-stone overflow-hidden">
-          <div className="bg-charcoal text-white p-10 text-center">
-            <div className="w-14 h-14 border border-white/30 flex items-center justify-center mx-auto mb-5">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <h2 className="font-serif text-3xl font-normal mb-2">
-              Reservation Confirmed
-            </h2>
-            <p className="text-white/60 text-sm">
-              Thank you for booking with {siteSettings.hotelName}
-            </p>
-          </div>
+      if (!res.ok) {
+        setSubmitError(data.error || "Booking failed");
+        setSubmitting(false);
+        return;
+      }
 
-          <div className="p-8 lg:p-10 space-y-8">
-            <div className="text-center py-6 border border-stone bg-warm-gray">
-              <p className="text-[0.65rem] tracking-[0.2em] uppercase text-muted mb-2">
-                Confirmation Number
-              </p>
-              <p className="text-2xl font-serif text-bronze tracking-wide">
-                {refNumber}
-              </p>
-            </div>
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+        return;
+      }
 
-            <div className="grid grid-cols-2 gap-px bg-stone border border-stone">
-              {[
-                { label: "Room", value: selectedRoom?.name },
-                { label: "Guest", value: form.guestName },
-                { label: "Nationality", value: form.nationality },
-                { label: "Email", value: form.email },
-                { label: "Check-in", value: formatDate(form.checkIn) },
-                { label: "Check-out", value: formatDate(form.checkOut) },
-                {
-                  label: "Total",
-                  value: formatPrice(totalAmount),
-                  highlight: true,
-                },
-              ].map((item) => (
-                <div key={item.label} className="bg-white p-4">
-                  <p className="text-[0.6rem] tracking-[0.15em] uppercase text-muted mb-1">
-                    {item.label}
-                  </p>
-                  <p
-                    className={cn(
-                      "text-sm font-medium break-words",
-                      item.highlight
-                        ? "text-bronze font-serif text-lg"
-                        : "text-charcoal"
-                    )}
-                  >
-                    {item.value}
-                  </p>
-                </div>
-              ))}
-            </div>
+      if (data.devMode && data.reservation) {
+        window.location.href = `/book/success?ref=${data.reservation.refNumber}`;
+        return;
+      }
 
-            <div className="text-sm text-muted border-l-2 border-bronze pl-4 space-y-1">
-              <p>
-                Confirmation sent to{" "}
-                <strong className="text-charcoal">{form.email}</strong>.
-              </p>
-              <p>WhatsApp notification will follow if a phone number was provided.</p>
-              <p className="text-xs pt-1">{bookingNotes.vat} · {bookingNotes.payment}</p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                href={`/booking/lookup?ref=${refNumber}`}
-                variant="outline"
-                className="flex-1"
-              >
-                Track Reservation
-              </Button>
-              <Button href="/" className="flex-1">
-                Return Home
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+      setSubmitError("Unexpected response from server");
+      setSubmitting(false);
+    } catch {
+      setSubmitError("Network error. Please try again.");
+      setSubmitting(false);
+    }
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-      {/* Step navigation */}
-      <div className="lg:col-span-3">
-        <div className="lg:sticky lg:top-28 space-y-6">
-          <div>
-            <p className="section-label mb-4">Reserve Now</p>
-            <ol className="space-y-1">
-              {STEPS.map((s) => (
-                <li key={s.id}>
-                  <button
-                    type="button"
-                    onClick={() => s.id < step && goToStep(s.id)}
-                    disabled={s.id > step}
-                    className={cn(
-                      "w-full flex items-center gap-4 py-3 px-4 transition-colors text-left",
-                      step === s.id && "bg-charcoal text-white",
-                      step > s.id && "text-bronze cursor-pointer hover:bg-warm-gray",
-                      step < s.id && "text-muted cursor-not-allowed"
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "w-7 h-7 flex items-center justify-center text-xs font-semibold shrink-0",
-                        step === s.id && "bg-white text-charcoal",
-                        step > s.id && "booking-step-done",
-                        step < s.id && "booking-step-pending"
-                      )}
-                    >
-                      {step > s.id ? (
-                        <Check className="w-3.5 h-3.5" />
-                      ) : (
-                        s.id + 1
-                      )}
-                    </span>
-                    <span className="text-xs tracking-wider uppercase font-medium hidden sm:inline">
-                      {s.label}
-                    </span>
-                    <span className="text-xs tracking-wider uppercase font-medium sm:hidden">
-                      {s.short}
-                    </span>
-                    {step > s.id && (
-                      <Pencil className="w-3 h-3 ml-auto opacity-50" />
-                    )}
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          {/* Compact advantages on mobile below steps */}
-          <div className="hidden lg:block bg-warm-gray border border-stone p-5">
-            <BookingAdvantages compact />
-          </div>
+    <div className="max-w-3xl mx-auto">
+      {cancelled && (
+        <div className="mb-4 p-3 border border-amber-300 bg-amber-50 text-sm text-amber-900">
+          Payment was cancelled. Your reservation is still pending — complete payment or contact us.
         </div>
-      </div>
+      )}
 
-      {/* Main form */}
-      <div className="lg:col-span-5">
-        <div className="bg-white border border-stone p-6 lg:p-10 animate-fade-up">
-          {/* Step 0: Dates */}
-          {step === 0 && (
-            <div>
-              <h2 className="font-serif text-2xl text-charcoal mb-2">
-                When would you like to stay?
-              </h2>
-              <p className="text-sm text-muted mb-2">
-                Select check-in and check-out dates to see live availability.
-              </p>
-              <p className="text-xs text-bronze mb-8">
-                {siteSettings.address} · {siteSettings.africanUnionDistanceMin} min
-                from African Union · {siteSettings.airportDistanceMin} min from
-                airport
-              </p>
-              <div className="space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label className="text-[0.65rem] tracking-[0.15em] uppercase text-muted font-semibold mb-2 block">
-                      Check In Date *
-                    </label>
-                    <input
-                      type="date"
-                      value={form.checkIn}
-                      min={today}
-                      onChange={(e) =>
-                        setForm({ ...form, checkIn: e.target.value })
-                      }
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[0.65rem] tracking-[0.15em] uppercase text-muted font-semibold mb-2 block">
-                      Check Out Date *
-                    </label>
-                    <input
-                      type="date"
-                      value={form.checkOut}
-                      min={form.checkIn || today}
-                      onChange={(e) =>
-                        setForm({ ...form, checkOut: e.target.value })
-                      }
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-[0.65rem] tracking-[0.15em] uppercase text-muted font-semibold mb-2 block">
-                    Number of Guests *
-                  </label>
-                  <select
-                    value={form.guests}
-                    onChange={(e) =>
-                      setForm({ ...form, guests: Number(e.target.value) })
-                    }
-                    className={inputClass}
-                  >
-                    {[1, 2, 3, 4, 5, 6].map((n) => (
-                      <option key={n} value={n}>
-                        {n} {n === 1 ? "Guest" : "Guests"}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {nights > 0 && (
-                  <div className="flex items-center gap-2 text-sm text-charcoal bg-warm-gray px-4 py-3 border border-stone">
-                    <Check className="w-4 h-4 text-bronze" />
-                    {nights} night{nights !== 1 ? "s" : ""} selected ·{" "}
-                    {bookingNotes.vat}
-                  </div>
-                )}
+      <ol className="flex gap-2 mb-6 text-xs">
+        {STEPS.map((s) => (
+          <li
+            key={s.id}
+            className={cn(
+              "flex-1 py-2 text-center border",
+              step === s.id ? "bg-charcoal text-white border-charcoal" : "border-stone text-muted"
+            )}
+          >
+            {s.id + 1}. {s.short}
+          </li>
+        ))}
+      </ol>
+
+      <div className="bg-white border border-stone p-6">
+        {step === 0 && (
+          <div className="space-y-4">
+            <h2 className="font-serif text-xl">Dates & guests</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs uppercase text-muted block mb-1">Check-in</label>
+                <input type="date" value={form.checkIn} min={today}
+                  onChange={(e) => setForm({ ...form, checkIn: e.target.value })} className={inputClass} />
+              </div>
+              <div>
+                <label className="text-xs uppercase text-muted block mb-1">Check-out</label>
+                <input type="date" value={form.checkOut} min={form.checkIn || today}
+                  onChange={(e) => setForm({ ...form, checkOut: e.target.value })} className={inputClass} />
               </div>
             </div>
-          )}
-
-          {/* Step 1: Room */}
-          {step === 1 && (
             <div>
-              <h2 className="font-serif text-2xl text-charcoal mb-2">
-                Select your room
-              </h2>
-              <p className="text-sm text-muted mb-1">
-                {formatDate(form.checkIn)} — {formatDate(form.checkOut)} ·{" "}
-                {form.guests} guest{form.guests !== 1 ? "s" : ""} · {nights}{" "}
-                night{nights !== 1 ? "s" : ""}
-              </p>
-              <p className="text-xs text-bronze mb-6">{bookingNotes.vat}</p>
-
-              {availableRooms.length === 0 ? (
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3 border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">
-                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                    No rooms available for these dates. Please try different
-                    dates.
-                  </div>
-                  <Button variant="outline" onClick={() => setStep(0)}>
-                    Change Dates
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {availableRooms.map((room) => (
-                    <button
-                      key={room.id}
-                      type="button"
-                      onClick={() =>
-                        setForm({ ...form, roomTypeId: room.id })
-                      }
-                      className={cn(
-                        "w-full text-left border transition-all duration-200",
-                        form.roomTypeId === room.id
-                          ? "border-charcoal ring-1 ring-charcoal bg-warm-gray"
-                          : "border-stone hover:border-charcoal/40"
-                      )}
-                    >
-                      <div className="flex flex-col sm:flex-row">
-                        <div className="relative w-full sm:w-40 h-36 sm:min-h-[140px] shrink-0">
-                          <Image
-                            src={room.images[0]}
-                            alt={room.name}
-                            fill
-                            className="object-cover"
-                          />
-                          {room.slug === "studio-apartment" && (
-                            <span className="absolute top-2 left-2 bg-bronze text-white text-[0.55rem] tracking-wider uppercase px-2 py-1">
-                              Popular
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex-1 p-5">
-                          <div className="flex justify-between items-start gap-4">
-                            <div>
-                              <h3 className="font-serif text-lg text-charcoal">
-                                {room.name}
-                              </h3>
-                              <p className="text-xs text-muted mt-1 line-clamp-2">
-                                {room.shortDescription}
-                              </p>
-                              <p className="text-[0.65rem] text-muted mt-2">
-                                {room.size} · {room.bedType} · up to{" "}
-                                {room.capacity} guests
-                              </p>
-                            </div>
-                            <div className="text-right shrink-0">
-                              <p className="font-serif text-xl text-bronze">
-                                {formatPrice(room.nightly)}
-                              </p>
-                              <p className="text-[0.6rem] tracking-wider uppercase text-muted">
-                                per night
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex flex-wrap gap-1.5 mt-3">
-                            {room.amenities.slice(0, 3).map((a) => (
-                              <span
-                                key={a}
-                                className="text-[0.6rem] bg-white border border-stone px-2 py-0.5 text-muted"
-                              >
-                                {a}
-                              </span>
-                            ))}
-                          </div>
-                          <div className="flex justify-between items-center mt-4 pt-3 border-t border-stone">
-                            <span className="text-xs text-green-700 font-medium">
-                              {room.available} room
-                              {room.available !== 1 ? "s" : ""} left
-                            </span>
-                            <span className="text-sm font-semibold text-charcoal">
-                              {formatPrice(room.total)} total
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Step 2: Guest details — matches their form fields */}
-          {step === 2 && (
-            <div>
-              <h2 className="font-serif text-2xl text-charcoal mb-2">
-                Guest information
-              </h2>
-              <p className="text-sm text-muted mb-8">
-                Required fields marked with *. Confirmation will be sent to your
-                email.
-              </p>
-              <div className="space-y-5">
-                <div>
-                  <label className="text-[0.65rem] tracking-[0.15em] uppercase text-muted font-semibold mb-2 block">
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={form.guestName}
-                    onChange={(e) =>
-                      setForm({ ...form, guestName: e.target.value })
-                    }
-                    placeholder="Your full name"
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label className="text-[0.65rem] tracking-[0.15em] uppercase text-muted font-semibold mb-2 block">
-                    E-mail *
-                  </label>
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) =>
-                      setForm({ ...form, email: e.target.value })
-                    }
-                    placeholder="you@email.com"
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label className="text-[0.65rem] tracking-[0.15em] uppercase text-muted font-semibold mb-2 block">
-                    Nationality *
-                  </label>
-                  <select
-                    value={form.nationality}
-                    onChange={(e) =>
-                      setForm({ ...form, nationality: e.target.value })
-                    }
-                    className={inputClass}
-                  >
-                    <option value="">Select nationality</option>
-                    {nationalities.map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[0.65rem] tracking-[0.15em] uppercase text-muted font-semibold mb-2 block">
-                    Phone / WhatsApp
-                  </label>
-                  <input
-                    type="tel"
-                    value={form.phone}
-                    onChange={(e) =>
-                      setForm({ ...form, phone: e.target.value })
-                    }
-                    placeholder="+251 911 000 000"
-                    className={inputClass}
-                  />
-                  <p className="text-xs text-muted mt-1">
-                    Optional — for WhatsApp booking confirmation
-                  </p>
-                </div>
-                <div>
-                  <label className="text-[0.65rem] tracking-[0.15em] uppercase text-muted font-semibold mb-2 block">
-                    Special Requests
-                  </label>
-                  <textarea
-                    value={form.specialRequests}
-                    onChange={(e) =>
-                      setForm({ ...form, specialRequests: e.target.value })
-                    }
-                    rows={3}
-                    placeholder="Airport pickup, late check-in, dietary needs..."
-                    className={cn(inputClass, "resize-none")}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Review + Captcha */}
-          {step === 3 && (
-            <div>
-              <h2 className="font-serif text-2xl text-charcoal mb-2">
-                Review & confirm
-              </h2>
-              <p className="text-sm text-muted mb-8">
-                Please verify your reservation details before completing
-              </p>
-
-              <div className="divide-y divide-stone mb-8">
-                {[
-                  { label: "Room", value: selectedRoom?.name },
-                  { label: "Guest", value: form.guestName },
-                  { label: "Nationality", value: form.nationality },
-                  { label: "Email", value: form.email },
-                  ...(form.phone
-                    ? [{ label: "Phone", value: form.phone }]
-                    : []),
-                  {
-                    label: "Stay",
-                    value: `${formatDate(form.checkIn)} — ${formatDate(form.checkOut)}`,
-                  },
-                  { label: "Nights", value: String(nights) },
-                  { label: "Guests", value: String(form.guests) },
-                ].map((row) => (
-                  <div
-                    key={row.label}
-                    className="flex justify-between py-3.5 text-sm gap-4"
-                  >
-                    <span className="text-muted shrink-0">{row.label}</span>
-                    <span className="font-medium text-charcoal text-right">
-                      {row.value}
-                    </span>
-                  </div>
+              <label className="text-xs uppercase text-muted block mb-1">Guests</label>
+              <select value={form.guests} onChange={(e) => setForm({ ...form, guests: Number(e.target.value) })} className={inputClass}>
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <option key={n} value={n}>{n} guest{n !== 1 ? "s" : ""}</option>
                 ))}
-                <div className="flex justify-between py-5">
-                  <div>
-                    <span className="font-serif text-lg text-charcoal">
-                      Total
-                    </span>
-                    <p className="text-[0.6rem] text-muted tracking-wider uppercase mt-0.5">
-                      {bookingNotes.vat}
+              </select>
+            </div>
+            {nights > 0 && <p className="text-sm">{nights} night(s) · {bookingNotes.vat}</p>}
+          </div>
+        )}
+
+        {step === 1 && (
+          <div>
+            <h2 className="font-serif text-xl mb-1">Select room</h2>
+            <p className="text-sm text-muted mb-4">
+              {formatDate(form.checkIn)} — {formatDate(form.checkOut)} · {form.guests} guest(s)
+            </p>
+            {loadingRooms && (
+              <p className="flex items-center gap-2 text-sm text-muted py-8">
+                <Loader2 className="w-4 h-4 animate-spin" /> Checking availability...
+              </p>
+            )}
+            {!loadingRooms && availableRooms.length === 0 && (
+              <div className="flex items-start gap-2 border border-amber-200 bg-amber-50 p-4 text-sm">
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                No rooms available for these dates.
+              </div>
+            )}
+            <div className="space-y-3">
+              {availableRooms.map((room) => (
+                <button
+                  key={room.id}
+                  type="button"
+                  onClick={() => setForm({ ...form, roomTypeId: room.id })}
+                  className={cn(
+                    "w-full text-left border p-4 flex gap-4",
+                    form.roomTypeId === room.id ? "border-charcoal bg-stone/30" : "border-stone"
+                  )}
+                >
+                  <div className="relative w-24 h-20 shrink-0">
+                    <Image src={room.images[0]} alt={room.name} fill className="object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium">{room.name}</p>
+                    <p className="text-xs text-muted">{room.size} · {room.bedType} · {room.available} left</p>
+                    <p className="text-sm text-bronze mt-1">
+                      {formatPrice(room.pricePerNight)}/night · {formatPrice(room.totalPrice)} total
                     </p>
                   </div>
-                  <span className="font-serif text-2xl text-bronze">
-                    {formatPrice(totalAmount)}
-                  </span>
-                </div>
-              </div>
-
-              <BookingCaptcha
-                value={captchaInput}
-                onChange={setCaptchaInput}
-                onValidChange={setCaptchaValid}
-                className="mb-6"
-              />
-
-              <p className="text-xs text-muted leading-relaxed">
-                {bookingNotes.payment} · {bookingNotes.cancellation} ·{" "}
-                {bookingNotes.confirmation}
-              </p>
+                </button>
+              ))}
             </div>
-          )}
-
-          {/* Navigation */}
-          <div className="flex justify-between mt-10 pt-8 border-t border-stone">
-            {step > 0 ? (
-              <Button variant="ghost" onClick={() => setStep(step - 1)}>
-                <ChevronLeft className="w-4 h-4" /> Back
-              </Button>
-            ) : (
-              <div />
-            )}
-            {step < 3 ? (
-              <Button
-                onClick={() => setStep(step + 1)}
-                disabled={!canProceed()}
-              >
-                Continue <ChevronRight className="w-4 h-4" />
-              </Button>
-            ) : (
-              <Button onClick={handleConfirm} disabled={!captchaValid}>
-                Complete Reservation
-              </Button>
-            )}
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* Rate summary sidebar */}
-      <div className="lg:col-span-4">
-        <div className="lg:sticky lg:top-28 bg-charcoal text-white p-8">
-          <p className="text-[0.65rem] tracking-[0.2em] uppercase text-white/50 mb-6">
-            Your Reservation
-          </p>
+        {step === 2 && (
+          <div className="space-y-4">
+            <h2 className="font-serif text-xl">Guest details</h2>
+            <input type="text" placeholder="Full name *" value={form.guestName}
+              onChange={(e) => setForm({ ...form, guestName: e.target.value })} className={inputClass} />
+            <input type="email" placeholder="Email *" value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputClass} />
+            <select value={form.nationality} onChange={(e) => setForm({ ...form, nationality: e.target.value })} className={inputClass}>
+              <option value="">Nationality *</option>
+              {nationalities.map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <input type="tel" placeholder="Phone / WhatsApp" value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inputClass} />
+            <textarea placeholder="Special requests" value={form.specialRequests} rows={3}
+              onChange={(e) => setForm({ ...form, specialRequests: e.target.value })} className={inputClass} />
+          </div>
+        )}
 
-          {form.checkIn && form.checkOut && nights > 0 && (
-            <div className="space-y-3 text-sm mb-6 pb-6 border-b border-white/10">
-              <div className="flex justify-between">
-                <span className="text-white/50">Check-in</span>
-                <span>{formatDate(form.checkIn)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/50">Check-out</span>
-                <span>{formatDate(form.checkOut)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/50">Guests</span>
-                <span>{form.guests}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/50">Duration</span>
-                <span>
-                  {nights} night{nights !== 1 ? "s" : ""}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {selectedRoom ? (
-            <>
-              <p className="font-serif text-xl mb-1">{selectedRoom.name}</p>
-              <p className="text-xs text-white/50 mb-1">{selectedRoom.size}</p>
-              <Link
-                href={`/rooms/${selectedRoom.slug}`}
-                className="text-[0.6rem] tracking-wider uppercase text-bronze-light hover:underline"
-              >
-                View room details
-              </Link>
-              {totalAmount > 0 && (
-                <div className="pt-6 mt-6 border-t border-white/10">
-                  <div className="flex justify-between items-end">
-                    <span className="text-white/50 text-sm">Total</span>
-                    <span className="font-serif text-3xl text-bronze-light">
-                      {formatPrice(totalAmount)}
-                    </span>
-                  </div>
-                  <p className="text-[0.6rem] text-white/40 mt-2 tracking-wider uppercase">
-                    {bookingNotes.vat}
-                  </p>
-                </div>
+        {step === 3 && selectedRoom && (
+          <div>
+            <h2 className="font-serif text-xl mb-4">Review & pay</h2>
+            <dl className="text-sm space-y-2 mb-4 border-b border-stone pb-4">
+              <div className="flex justify-between"><dt>Room</dt><dd>{selectedRoom.name}</dd></div>
+              <div className="flex justify-between"><dt>Guest</dt><dd>{form.guestName}</dd></div>
+              <div className="flex justify-between"><dt>Email</dt><dd>{form.email}</dd></div>
+              <div className="flex justify-between"><dt>Stay</dt><dd>{formatDate(form.checkIn)} — {formatDate(form.checkOut)}</dd></div>
+              {promoDiscount && (
+                <>
+                  <div className="flex justify-between text-muted"><dt>Subtotal</dt><dd>{formatPrice(promoDiscount.subtotal)}</dd></div>
+                  <div className="flex justify-between text-green-700"><dt>Promo ({promoDiscount.code})</dt><dd>-{formatPrice(promoDiscount.savings)}</dd></div>
+                </>
               )}
-            </>
-          ) : (
-            <p className="text-white/40 text-sm italic font-serif">
-              Complete each step to build your reservation
-            </p>
-          )}
-
-          <div className="mt-8 pt-6 border-t border-white/10">
-            <BookingAdvantages />
+              <div className="flex justify-between font-medium text-lg pt-2"><dt>Total</dt><dd className="text-bronze">{formatPrice(totalAmount)}</dd></div>
+            </dl>
+            <div className="flex gap-2 mb-6">
+              <input
+                type="text"
+                placeholder="Promo code (e.g. DIRECT10)"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                className={`flex-1 ${inputClass}`}
+              />
+              <Button type="button" variant="outline" onClick={applyPromo} disabled={validatingPromo || !promoCode.trim()}>
+                {validatingPromo ? "..." : "Apply"}
+              </Button>
+            </div>
+            {promoError && <p className="text-sm text-red-600 mb-4">{promoError}</p>}
+            {promoDiscount && <p className="text-xs text-green-700 mb-4">Promo {promoDiscount.code} applied</p>}
+            <BookingCaptcha value={captchaInput} onChange={setCaptchaInput} onValidChange={setCaptchaValid} className="mb-4" />
+            <p className="text-xs text-muted">{bookingNotes.payment} · {bookingNotes.cancellation}</p>
+            {submitError && <p className="mt-3 text-sm text-red-600">{submitError}</p>}
           </div>
+        )}
+
+        <div className="flex justify-between mt-8 pt-4 border-t border-stone">
+          {step > 0 ? (
+            <Button variant="ghost" onClick={() => setStep(step - 1)} disabled={submitting}>
+              <ChevronLeft className="w-4 h-4" /> Back
+            </Button>
+          ) : <div />}
+          {step < 3 ? (
+            <Button onClick={() => setStep(step + 1)} disabled={!canProceed()}>
+              Continue <ChevronRight className="w-4 h-4" />
+            </Button>
+          ) : (
+            <Button onClick={handleConfirm} disabled={!canProceed()}>
+              {submitting ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : "Pay with Stripe"}
+            </Button>
+          )}
         </div>
       </div>
+
+      {selectedRoom && step > 0 && (
+        <div className="mt-4 p-4 bg-charcoal text-white text-sm">
+          <p>{selectedRoom.name} · {formatPrice(totalAmount)} total</p>
+          <p className="text-white/60 text-xs mt-1">{siteSettings.hotelName}</p>
+        </div>
+      )}
     </div>
   );
 }
 
 export function BookingFlow() {
   return (
-    <Suspense
-      fallback={
-        <div className="text-center py-20 text-muted text-sm tracking-wider uppercase">
-          Loading reservation...
-        </div>
-      }
-    >
+    <Suspense fallback={<p className="text-center py-10 text-muted">Loading...</p>}>
       <BookingFlowInner />
     </Suspense>
   );

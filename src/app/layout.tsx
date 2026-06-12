@@ -5,6 +5,8 @@ import { TopBar } from "@/components/layout/top-bar";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/layout/whatsapp-button";
 import { ScrollToTop } from "@/components/layout/scroll-to-top";
+import { getRoomNavItems } from "@/lib/data/rooms";
+import { getSiteSettings } from "@/lib/data/settings";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -40,16 +42,46 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const roomNav = await getRoomNavItems();
+  const settings = await getSiteSettings();
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Hotel",
+    name: settings.hotelName,
+    description:
+      "Book directly at Victoria Hotel Apartments in Sarbet, Addis Ababa.",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: settings.address,
+      addressLocality: settings.city,
+      addressCountry: settings.country,
+    },
+    telephone: settings.phone,
+    email: settings.email,
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: settings.latitude,
+      longitude: settings.longitude,
+    },
+  };
+
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="antialiased min-h-screen flex flex-col">
         <TopBar />
-        <Header />
+        <Header roomNav={roomNav} />
         <main className="flex-1">{children}</main>
         <Footer />
         <WhatsAppButton />

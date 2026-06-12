@@ -7,18 +7,25 @@ import { RoomShowcase } from "@/components/rooms/room-showcase";
 import { ReviewCard } from "@/components/reviews/review-card";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { TrustBadges } from "@/components/ui/trust-badges";
-import { roomTypes, getApprovedReviews, siteSettings } from "@/lib/mock-data";
+import { getApprovedReviews } from "@/lib/data/reviews";
+import { getRoomTypes } from "@/lib/data/rooms";
+import { getSiteSettings } from "@/lib/data/settings";
 import { hotelAdvantages } from "@/lib/content";
 
-export default function HomePage() {
-  const reviews = getApprovedReviews().slice(0, 3);
+export default async function HomePage() {
+  const [reviewsAll, roomTypes, siteSettings] = await Promise.all([
+    getApprovedReviews(),
+    getRoomTypes(),
+    getSiteSettings(),
+  ]);
+  const reviews = reviewsAll.slice(0, 3);
   const totalRooms = roomTypes.reduce((s, r) => s + r.inventory, 0);
 
   return (
     <>
       <section className="relative min-h-[92vh] flex flex-col justify-end -mt-16 lg:-mt-[6.25rem]">
         <Image
-          src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1920&q=80"
+          src="/images/gallery/property/03.webp"
           alt="Victoria Hotel Apartment suite"
           fill
           className="object-cover"
@@ -199,7 +206,7 @@ export default function HomePage() {
       <section className="grid grid-cols-1 lg:grid-cols-2">
         <div className="relative min-h-[400px]">
           <Image
-            src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80"
+            src="/images/gallery/recreation/04.webp"
             alt="Gym and recreation"
             fill
             className="object-cover"
@@ -212,7 +219,7 @@ export default function HomePage() {
               Stay healthy and fit while enjoying luxury at our place.
             </p>
             <Link
-              href="/contact"
+              href="/facilities"
               className="text-xs tracking-[0.2em] uppercase font-semibold text-white hover:text-bronze-light transition-colors inline-flex items-center gap-2"
             >
               Learn More <ArrowRight className="w-4 h-4" />
@@ -221,7 +228,7 @@ export default function HomePage() {
         </div>
         <div className="relative min-h-[400px]">
           <Image
-            src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80"
+            src="/images/gallery/lobby/04.webp"
             alt="Work and meeting space"
             fill
             className="object-cover"
@@ -235,7 +242,7 @@ export default function HomePage() {
               high-speed connectivity.
             </p>
             <Link
-              href="/contact"
+              href="/amenities"
               className="text-xs tracking-[0.2em] uppercase font-semibold text-white hover:text-bronze-light transition-colors inline-flex items-center gap-2"
             >
               Learn More <ArrowRight className="w-4 h-4" />
@@ -248,7 +255,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="relative aspect-[4/3] overflow-hidden">
             <Image
-              src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80"
+              src="/images/gallery/restaurant/01.webp"
               alt="Restaurant dining"
               fill
               className="object-cover"
@@ -264,7 +271,7 @@ export default function HomePage() {
               cuisine. Complimentary breakfast for all direct-booking guests.
               Our cozy rooftop lounge offers a picturesque view of the city.
             </p>
-            <Button href="/contact" variant="secondary">
+            <Button href="/facilities" variant="secondary">
               Explore Dining
             </Button>
           </div>

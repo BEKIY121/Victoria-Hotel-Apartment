@@ -1,13 +1,12 @@
 import type { GuestReview } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
-import { getRoomById } from "@/lib/mock-data";
 
 interface ReviewCardProps {
   review: GuestReview;
 }
 
 export function ReviewCard({ review }: ReviewCardProps) {
-  const room = review.roomTypeId ? getRoomById(review.roomTypeId) : null;
+  const roomName = review.roomName;
 
   return (
     <div className="bg-white border border-stone p-8 card-luxury">
@@ -34,9 +33,9 @@ export function ReviewCard({ review }: ReviewCardProps) {
           <p className="text-xs text-muted mt-0.5">{review.country}</p>
         </div>
         <div className="text-right">
-          {room && (
+          {roomName && (
             <p className="text-xs tracking-wider uppercase text-bronze">
-              {room.name}
+              {roomName}
             </p>
           )}
           <p className="text-xs text-muted mt-0.5">{formatDate(review.date)}</p>

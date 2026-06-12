@@ -1,17 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import type { RoomType } from "@/lib/types";
+import type { RoomType, SeasonalPricing } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
 import { getStartingPrice } from "@/lib/pricing";
-import { seasonalPricing } from "@/lib/mock-data";
+import { seasonalPricing as fallbackSeasonal } from "@/lib/mock-data";
 
 interface RoomCardProps {
   room: RoomType;
   showBookButton?: boolean;
+  seasonalPricing?: SeasonalPricing[];
 }
 
-export function RoomCard({ room, showBookButton = true }: RoomCardProps) {
+export function RoomCard({
+  room,
+  showBookButton = true,
+  seasonalPricing = fallbackSeasonal,
+}: RoomCardProps) {
   const startingPrice = getStartingPrice(room, seasonalPricing);
 
   return (

@@ -1,0 +1,161 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ReservationStatus {
+  pending
+  confirmed
+  cancelled
+  checked_in
+  checked_out
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+  refunded
+}
+
+model RoomType {
+  id               String            @id @default(cuid())
+  slug             String            @unique
+  name             String
+  description      String            @db.Text
+  shortDescription String
+  capacity         Int
+  bedType          String
+  sizeSqm          Decimal           @db.Decimal(6, 2)
+  basePrice        Decimal           @db.Decimal(10, 2)
+  inventory        Int
+  amenities        String[]
+  images           String[]
+  featured         Boolean           @default(false)
+  sortOrder        Int               @default(0)
+  active           Boolean           @default(true)
+  reservations     Reservation[]
+  seasonalRates    SeasonalRate[]
+  promotionRooms   PromotionRoom[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model SeasonalRate {
+  id              String   @id @default(cuid())
+  roomTypeId      String
+  roomType        RoomType @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  name            String
+  startDate       DateTime @db.Date
+  endDate         DateTime @db.Date
+  priceMultiplier Decimal? @db.Decimal(5, 2)
+  fixedPrice      Decimal? @db.Decimal(10, 2)
+}
+
+model Promotion {
+  id            String          @id @default(cuid())
+  code          String          @unique
+  name          String
+  discountType  String
+  discountValue Decimal         @db.Decimal(10, 2)
+  startDate     DateTime        @db.Date
+  endDate       DateTime        @db.Date
+  active        Boolean         @default(true)
+  rooms         PromotionRoom[]
+}
+
+model PromotionRoom {
+  promotionId String
+  roomTypeId  String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  roomType    RoomType  @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+
+  @@id([promotionId, roomTypeId])
+}
+
+model Guest {
+  id           String        @id @default(cuid())
+  name         String
+  email        String
+  phone        String
+  nationality  String?
+  reservations Reservation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Reservation {
+  id              String            @id @default(cuid())
+  refNumber       String            @unique
+  guestId         String
+  guest           Guest             @relation(fields: [guestId], references: [id])
+  roomTypeId      String
+  roomType        RoomType          @relation(fields: [roomTypeId], references: [id])
+  checkIn         DateTime          @db.Date
+  checkOut        DateTime          @db.Date
+  guests          Int
+  status          ReservationStatus @default(pending)
+  totalAmount     Decimal           @db.Decimal(10, 2)
+  specialRequests String?           @db.Text
+  payments        Payment[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model Payment {
+  id                    String        @id @default(cuid())
+  reservationId         String
+  reservation           Reservation   @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  stripeSessionId       String?       @unique
+  stripePaymentIntentId String?       @unique
+  amount                Decimal       @db.Decimal(10, 2)
+  currency              String        @default("usd")
+  status                PaymentStatus @default(pending)
+  paidAt                DateTime?
+  createdAt             DateTime      @default(now())
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  name       String
+  country    String
+  rating     Int
+  text       String   @db.Text
+  roomTypeId String?
+  approved   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model GalleryImage {
+  id        String  @id @default(cuid())
+  category  String
+  title     String?
+  url       String
+  sortOrder Int     @default(0)
+  active    Boolean @default(true)
+}
+
+model AvailabilityBlock {
+  id         String    @id @default(cuid())
+  roomTypeId String?
+  startDate  DateTime  @db.Date
+  endDate    DateTime  @db.Date
+  reason     String?
+}
+
+model SiteSetting {
+  id   String @id @default("default")
+  data Json
+}
+
+model AdminUser {
+  id           String @id @default(cuid())
+  email        String @unique
+  passwordHash String
+  name         String
+  role         String @default("staff")
+}

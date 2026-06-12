@@ -1,110 +1,180 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
-import { Search, AlertCircle } from "lucide-react";
+import { Suspense, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
-import {
-  getReservationByRef,
-  getRoomById,
-} from "@/lib/mock-data";
 import { formatDate, formatPrice } from "@/lib/utils";
+import { bookingNotes } from "@/lib/content";
+import type { ReservationStatus } from "@/lib/types";
+
+interface ReservationResult {
+  refNumber: string;
+  guestName: string;
+  email: string;
+  phone: string;
+  nationality?: string;
+  roomName: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  totalAmount: number;
+  status: ReservationStatus;
+  specialRequests?: string;
+  paymentStatus?: string | null;
+}
 
 function LookupInner() {
   const searchParams = useSearchParams();
   const initialRef = searchParams.get("ref") || "";
   const [refInput, setRefInput] = useState(initialRef);
-  const [searched, setSearched] = useState(!!initialRef);
-  const reservation = searched ? getReservationByRef(refInput) : null;
-  const room = reservation ? getRoomById(reservation.roomTypeId) : null;
+  const [emailInput, setEmailInput] = useState("");
+  const [reservation, setReservation] = useState<ReservationResult | null>(null);
+  const [canCancel, setCanCancel] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelMsg, setCancelMsg] = useState("");
 
-  function handleSearch(e: React.FormEvent) {
+  useEffect(() => {
+    if (initialRef) {
+      const params = new URLSearchParams({ ref: initialRef.trim() });
+      fetch(`/api/reservations/lookup?${params}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.reservation) {
+            setReservation({ ...data.reservation, paymentStatus: data.paymentStatus });
+            setCanCancel(Boolean(data.canCancel));
+          } else setError(data.error || "Not found");
+        });
+    }
+  }, [initialRef]);
+
+  async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
-    setSearched(true);
+    setLoading(true);
+    setError("");
+    setCancelMsg("");
+    setReservation(null);
+    setCanCancel(false);
+
+    const params = new URLSearchParams({ ref: refInput.trim() });
+    if (emailInput.trim()) params.set("email", emailInput.trim());
+
+    try {
+      const res = await fetch(`/api/reservations/lookup?${params}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Booking not found");
+      } else {
+        setReservation({ ...data.reservation, paymentStatus: data.paymentStatus });
+        setCanCancel(Boolean(data.canCancel));
+      }
+    } catch {
+      setError("Lookup failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleCancel() {
+    if (!reservation || !emailInput.trim()) {
+      setCancelMsg("Enter your email above to verify before cancelling.");
+      return;
+    }
+    if (!confirm(`Cancel booking ${reservation.refNumber}?`)) return;
+
+    setCancelling(true);
+    setCancelMsg("");
+    try {
+      const res = await fetch("/api/reservations/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ref: reservation.refNumber, email: emailInput.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCancelMsg(data.error || "Cancellation failed");
+        return;
+      }
+      setReservation({ ...data.reservation, paymentStatus: reservation.paymentStatus });
+      setCanCancel(false);
+      setCancelMsg("Booking cancelled. A confirmation email has been sent.");
+    } catch {
+      setCancelMsg("Cancellation failed — please contact the hotel.");
+    } finally {
+      setCancelling(false);
+    }
   }
 
   return (
     <div className="max-w-xl mx-auto">
-      <form onSubmit={handleSearch} className="flex gap-3 mb-8">
+      <form onSubmit={handleSearch} className="space-y-3 mb-8">
         <input
           type="text"
           value={refInput}
-          onChange={(e) => {
-            setRefInput(e.target.value);
-            setSearched(false);
-          }}
-          placeholder="VHA-20260608-XXXX"
-          className="flex-1 px-4 py-3 rounded-lg border border-cream-dark focus:outline-none focus:ring-2 focus:ring-gold/50 font-mono text-sm"
+          onChange={(e) => setRefInput(e.target.value)}
+          placeholder="Booking reference (VHA-...)"
+          className="w-full px-4 py-3 border border-stone font-mono text-sm"
+          required
         />
-        <Button type="submit">
-          <Search className="w-4 h-4" /> Find
+        <input
+          type="email"
+          value={emailInput}
+          onChange={(e) => setEmailInput(e.target.value)}
+          placeholder="Email (required to cancel)"
+          className="w-full px-4 py-3 border border-stone text-sm"
+        />
+        <Button type="submit" disabled={loading} className="w-full">
+          {loading ? "Searching..." : "Find Booking"}
         </Button>
       </form>
 
-      {searched && !reservation && (
-        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-800">
-          <AlertCircle className="w-5 h-5 shrink-0" />
-          No booking found with reference &ldquo;{refInput}&rdquo;. Please
-          check and try again.
-        </div>
-      )}
+      {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
 
       {reservation && (
-        <div className="bg-white rounded-2xl shadow-lg border border-cream-dark overflow-hidden animate-fade-in">
-          <div className="p-6 border-b border-cream-dark flex items-center justify-between">
+        <div className="border border-stone bg-white p-6">
+          <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-xs text-navy/50 uppercase tracking-wider">
-                Booking Reference
-              </p>
-              <p className="text-xl font-bold font-mono text-gold">
-                {reservation.refNumber}
-              </p>
+              <p className="text-xs text-muted uppercase">Reference</p>
+              <p className="font-mono text-lg text-bronze">{reservation.refNumber}</p>
             </div>
             <StatusBadge status={reservation.status} />
           </div>
-          <div className="p-6 space-y-4 text-sm">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-navy/50 text-xs mb-1">Guest</p>
-                <p className="font-medium">{reservation.guestName}</p>
-              </div>
-              <div>
-                <p className="text-navy/50 text-xs mb-1">Room</p>
-                <p className="font-medium">{room?.name}</p>
-              </div>
-              <div>
-                <p className="text-navy/50 text-xs mb-1">Check-in</p>
-                <p className="font-medium">{formatDate(reservation.checkIn)}</p>
-              </div>
-              <div>
-                <p className="text-navy/50 text-xs mb-1">Check-out</p>
-                <p className="font-medium">
-                  {formatDate(reservation.checkOut)}
-                </p>
-              </div>
-              <div>
-                <p className="text-navy/50 text-xs mb-1">Nationality</p>
-                <p className="font-medium">{reservation.nationality || "—"}</p>
-              </div>
-              <div>
-                <p className="text-navy/50 text-xs mb-1">Guests</p>
-                <p className="font-medium">{reservation.guests}</p>
-              </div>
-              <div>
-                <p className="text-navy/50 text-xs mb-1">Total</p>
-                <p className="font-medium text-gold">
-                  {formatPrice(reservation.totalAmount)}
-                </p>
-              </div>
-            </div>
-            {reservation.specialRequests && (
-              <div className="bg-cream rounded-lg p-3">
-                <p className="text-xs text-navy/50 mb-1">Special Requests</p>
-                <p>{reservation.specialRequests}</p>
-              </div>
+          <dl className="grid grid-cols-2 gap-3 text-sm">
+            <div><dt className="text-muted text-xs">Guest</dt><dd>{reservation.guestName}</dd></div>
+            <div><dt className="text-muted text-xs">Room</dt><dd>{reservation.roomName}</dd></div>
+            <div><dt className="text-muted text-xs">Check-in</dt><dd>{formatDate(reservation.checkIn)}</dd></div>
+            <div><dt className="text-muted text-xs">Check-out</dt><dd>{formatDate(reservation.checkOut)}</dd></div>
+            <div><dt className="text-muted text-xs">Guests</dt><dd>{reservation.guests}</dd></div>
+            <div><dt className="text-muted text-xs">Total</dt><dd>{formatPrice(reservation.totalAmount)}</dd></div>
+            {reservation.paymentStatus && (
+              <div><dt className="text-muted text-xs">Payment</dt><dd className="capitalize">{reservation.paymentStatus}</dd></div>
             )}
-          </div>
+          </dl>
+          {reservation.specialRequests && (
+            <p className="mt-4 text-sm border-t border-stone pt-4">
+              <span className="text-muted">Notes: </span>{reservation.specialRequests}
+            </p>
+          )}
+          {canCancel && reservation.status !== "cancelled" && (
+            <div className="mt-6 pt-4 border-t border-stone">
+              <p className="text-xs text-muted mb-3">{bookingNotes.cancellation}</p>
+              <Button
+                variant="outline"
+                onClick={handleCancel}
+                disabled={cancelling}
+                className="w-full"
+              >
+                {cancelling ? "Cancelling..." : "Cancel Booking"}
+              </Button>
+            </div>
+          )}
+          {cancelMsg && (
+            <p className={`mt-3 text-sm ${cancelMsg.includes("cancelled") ? "text-green-700" : "text-red-600"}`}>
+              {cancelMsg}
+            </p>
+          )}
         </div>
       )}
     </div>
@@ -116,14 +186,10 @@ export default function BookingLookupPage() {
     <div className="py-12 lg:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
-          <h1 className="font-serif text-3xl font-bold text-navy mb-2">
-            Find My Booking
-          </h1>
-          <p className="text-navy/60">
-            Enter your booking reference number to check reservation status
-          </p>
+          <h1 className="font-serif text-3xl mb-2">Find My Booking</h1>
+          <p className="text-muted text-sm">Enter your booking reference to check status</p>
         </div>
-        <Suspense fallback={<div className="text-center py-10">Loading...</div>}>
+        <Suspense fallback={<p className="text-center">Loading...</p>}>
           <LookupInner />
         </Suspense>
       </div>

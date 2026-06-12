@@ -29,6 +29,9 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-white/60">
               {[
                 { href: "/rooms", label: "Our Rooms" },
+                { href: "/gallery", label: "Photo Gallery" },
+                { href: "/facilities", label: "Facilities" },
+                { href: "/amenities", label: "Amenities" },
                 { href: "/book", label: "Book Direct & Save" },
                 { href: "/reviews", label: "Guest Reviews" },
                 { href: "/booking/lookup", label: "Find My Booking" },

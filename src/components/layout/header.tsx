@@ -7,17 +7,22 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/layout/logo";
 import { cn } from "@/lib/utils";
-import { roomTypes } from "@/lib/mock-data";
 
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/rooms", label: "Rooms", hasDropdown: true },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/facilities", label: "Facilities" },
   { href: "/reviews", label: "Reviews" },
   { href: "/contact", label: "Contact" },
 ];
 
-export function Header() {
+interface HeaderProps {
+  roomNav: { slug: string; name: string }[];
+}
+
+export function Header({ roomNav }: HeaderProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [roomsOpen, setRoomsOpen] = useState(false);
@@ -73,9 +78,9 @@ export function Header() {
                   {roomsOpen && (
                     <div className="absolute top-full left-0 pt-2 w-56 animate-fade-up">
                       <div className="bg-white shadow-xl border border-stone py-2">
-                        {roomTypes.map((room) => (
+                        {roomNav.map((room) => (
                           <Link
-                            key={room.id}
+                            key={room.slug}
                             href={`/rooms/${room.slug}`}
                             className="block px-5 py-2.5 text-sm text-charcoal hover:bg-warm-gray hover:text-bronze transition-colors"
                           >

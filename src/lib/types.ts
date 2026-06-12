@@ -39,6 +39,7 @@ export interface GuestReview {
   text: string;
   date: string;
   roomTypeId?: string;
+  roomName?: string;
   approved: boolean;
 }
 
@@ -93,6 +94,7 @@ export interface BookingFormData {
   nationality: string;
   phone: string;
   specialRequests: string;
+  promoCode?: string;
 }
 
 export interface HotelAdvantage {

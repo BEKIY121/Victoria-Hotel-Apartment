@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { siteSettings } from "@/lib/mock-data";
+import { ContactForm } from "@/components/contact/contact-form";
+import { getSiteSettings } from "@/lib/data/settings";
 import { getWhatsAppUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -18,7 +19,8 @@ export const metadata: Metadata = {
     "Contact Victoria Hotel Apartment in Bole, Addis Ababa. Address, phone, WhatsApp, and directions from Bole International Airport.",
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const siteSettings = await getSiteSettings();
   const whatsappUrl = getWhatsAppUrl(
     siteSettings.whatsappNumber,
     "Hello! I'd like to inquire about Victoria Hotel Apartment."
@@ -128,7 +130,9 @@ export default function ContactPage() {
                 ))}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 mt-10">
+              <ContactForm />
+
+              <div className="flex flex-col sm:flex-row gap-3 mt-6">
                 <Button href="/book" className="flex-1">
                   Book Now
                 </Button>
@@ -146,10 +150,12 @@ export default function ContactPage() {
 
             <div className="aspect-square lg:aspect-auto lg:min-h-[560px] bg-stone overflow-hidden border border-stone">
               <iframe
-                title="Victoria Hotel Apartment map"
-                src={`https://www.openstreetmap.org/export/embed.html?bbox=${siteSettings.longitude - 0.02}%2C${siteSettings.latitude - 0.02}%2C${siteSettings.longitude + 0.02}%2C${siteSettings.latitude + 0.02}&layer=mapnik&marker=${siteSettings.latitude}%2C${siteSettings.longitude}`}
+                title="Victoria Hotel Apartments on Google Maps"
+                src={`https://maps.google.com/maps?q=${siteSettings.latitude},${siteSettings.longitude}&hl=en&z=16&output=embed`}
                 className="w-full h-full min-h-[400px] border-0"
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
               />
             </div>
           </div>

@@ -73,9 +73,60 @@ export const hotelAdvantages: HotelAdvantage[] = [
   },
 ];
 
+export const facilitiesContent = [
+  {
+    slug: "fitness",
+    title: "Fitness Center",
+    description:
+      "Stay active during your visit with our bright, well-equipped fitness center. Modern cardio and strength equipment in a clean, welcoming environment.",
+    image: "/images/gallery/recreation/04.webp",
+    highlights: ["Cardio equipment", "Free weights", "Open daily", "Complimentary for guests"],
+  },
+  {
+    slug: "restaurant",
+    title: "Lobby Café & Restaurant",
+    description:
+      "Enjoy excellent cuisine in our lobby café and restaurant. Complimentary breakfast is served daily for direct-booking guests, with a rooftop lounge offering city views.",
+    image: "/images/gallery/restaurant/01.webp",
+    highlights: ["Complimentary breakfast", "Rooftop lounge", "Room service", "Daily dining"],
+  },
+  {
+    slug: "lobby",
+    title: "Lobby & Reception",
+    description:
+      "Our elegant lobby welcomes you around the clock. Professional 24-hour reception, concierge assistance, and a refined atmosphere from the moment you arrive.",
+    image: "/images/gallery/lobby/04.webp",
+    highlights: ["24-hour reception", "Concierge service", "Elegant interiors", "Luggage assistance"],
+  },
+  {
+    slug: "shuttle",
+    title: "Airport Shuttle",
+    description:
+      "Complimentary shuttle service to and from Bole International Airport. Just 15 minutes from the airport and 2 minutes from the African Union headquarters.",
+    image: "/images/gallery/property/03.webp",
+    highlights: ["Free shuttle", "15 min from airport", "2 min from African Union", "On request transfers"],
+  },
+  {
+    slug: "laundry",
+    title: "Laundry Service",
+    description:
+      "Professional laundry facilities available for short and extended stays. Ideal for business travelers and families who need hassle-free garment care.",
+    image: "/images/gallery/lobby/08.webp",
+    highlights: ["Professional laundry", "Extended-stay friendly", "Quick turnaround", "In-room collection"],
+  },
+  {
+    slug: "security",
+    title: "Security & Infrastructure",
+    description:
+      "24/7 security, magnetic key access, backup power generators, and private groundwater supply ensure uninterrupted comfort and peace of mind.",
+    image: "/images/gallery/property/06.webp",
+    highlights: ["24/7 security", "Backup generators", "Magnetic key system", "Private water supply"],
+  },
+];
+
 export const bookingNotes = {
-  vat: "All prices include 15% V.A.T",
-  payment: "Pay on arrival at the property",
+  vat: "All prices in USD · include 15% V.A.T",
+  payment: "Secure online payment via Stripe",
   cancellation: "Free cancellation up to 24 hours before check-in",
-  confirmation: "Instant confirmation via email and WhatsApp",
+  confirmation: "Instant confirmation by email after payment",
 };

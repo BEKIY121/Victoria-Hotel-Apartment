@@ -15,7 +15,7 @@ export default function BookPage() {
       {/* Hyatt-style booking hero */}
       <section className="relative bg-charcoal text-white pt-8 pb-32 lg:pb-40 -mt-16 lg:-mt-[6.25rem]">
         <Image
-          src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=80"
+          src="/images/gallery/lobby/05.webp"
           alt=""
           fill
           className="object-cover opacity-30"
