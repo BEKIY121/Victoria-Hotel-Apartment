@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { GalleryGrid } from "@/components/gallery/gallery-grid";
 import { Button } from "@/components/ui/button";
+import { PageHero } from "@/components/ui/page-hero";
 import { getGalleryCategories } from "@/lib/data/gallery";
 import { getRoomTypes } from "@/lib/data/rooms";
 
@@ -34,18 +35,13 @@ export default async function GalleryPage() {
 
   return (
     <>
-      <section className="bg-charcoal text-white pt-28 pb-16 -mt-16 lg:-mt-[6.25rem]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="section-label text-bronze-light mb-3">Gallery</p>
-          <h1 className="font-serif text-4xl lg:text-5xl font-normal mb-4">
-            Victoria Hotel Apartments
-          </h1>
-          <p className="text-white/60 max-w-xl leading-relaxed">
-            Real photography of our rooms, lobby, restaurant, fitness center,
-            and property — experience Victoria before you arrive.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        image="/images/gallery/property/03.webp"
+        imageAlt="Victoria Hotel gallery"
+        label="Gallery"
+        title="Victoria Hotel Apartments"
+        subtitle="Real photography of our rooms, lobby, restaurant, fitness center, and property — experience Victoria before you arrive."
+      />
 
       <section className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

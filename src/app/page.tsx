@@ -3,14 +3,18 @@ import Link from "next/link";
 import { ArrowRight, Dumbbell, Briefcase, UtensilsCrossed, MapPin, Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingWidget } from "@/components/booking/booking-widget";
+import { HomeHero } from "@/components/layout/home-hero";
 import { RoomShowcase } from "@/components/rooms/room-showcase";
 import { ReviewCard } from "@/components/reviews/review-card";
+import { EditorialHeading } from "@/components/ui/editorial-heading";
+import { QuoteCta } from "@/components/ui/quote-cta";
+import { TruthPillars } from "@/components/ui/truth-pillars";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { TrustBadges } from "@/components/ui/trust-badges";
 import { getApprovedReviews } from "@/lib/data/reviews";
 import { getRoomTypes } from "@/lib/data/rooms";
 import { getSiteSettings } from "@/lib/data/settings";
-import { hotelAdvantages } from "@/lib/content";
+import { fourTruths, hotelAdvantages } from "@/lib/content";
 
 export default async function HomePage() {
   const [reviewsAll, roomTypes, siteSettings] = await Promise.all([
@@ -23,68 +27,41 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative min-h-[92vh] flex flex-col justify-end -mt-16 lg:-mt-[6.25rem]">
-        <Image
-          src="/images/gallery/property/03.webp"
-          alt="Victoria Hotel Apartment suite"
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-charcoal/40 via-charcoal/20 to-charcoal/80" />
+      <HomeHero
+        africanUnionDistanceMin={siteSettings.africanUnionDistanceMin}
+        airportDistanceMin={siteSettings.airportDistanceMin}
+      />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-8 lg:pb-12">
-          <div className="max-w-3xl animate-fade-up">
-            <p className="text-white/80 text-sm tracking-[0.3em] uppercase mb-4 font-light">
-              Stay &nbsp;·&nbsp; Relax
+      <section className="py-20 lg:py-24 bg-warm-gray/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <EditorialHeading
+              italic="Our"
+              emphasis="Hotel"
+              subtitle="Four Truths"
+              align="center"
+            />
+            <p className="mt-6 text-muted max-w-2xl mx-auto leading-relaxed">
+              Design and comfort combined — because we care about your well-being.
+              Every material and amenity is chosen for your comfort and satisfaction.
             </p>
-            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-normal text-white leading-[1.05] mb-6">
-              Victoria Hotel
-              <br />
-              Apartments
-            </h1>
-            <p className="text-white/75 text-lg max-w-xl leading-relaxed mb-10 font-light">
-              Elegance, comfort, and affordability in Sarbet, Pushkin Square —
-              {siteSettings.africanUnionDistanceMin} min from the African Union,{" "}
-              {siteSettings.airportDistanceMin} min from the airport.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Button href="/book" variant="light" size="lg">
-                Reserve Now
-              </Button>
-              <Button href="/rooms" variant="light" size="lg" className="border-white/40">
-                Our Rooms
-              </Button>
-              <Link
-                href="/about"
-                className="inline-flex items-center gap-2 text-white/80 hover:text-white text-xs tracking-[0.2em] uppercase font-semibold transition-colors py-4"
-              >
-                View More <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
           </div>
-        </div>
-
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 pb-8 lg:pb-12">
-          <BookingWidget variant="hero" />
+          <TruthPillars items={fourTruths} />
         </div>
       </section>
 
-      <section className="py-16 lg:py-20 bg-warm-gray border-y border-stone">
+      <section className="py-16 lg:py-20 border-b border-stone/40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            label="Our Advantages"
-            title="Everything You Need For A Perfect Stay"
-            align="center"
-            className="mb-12"
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {hotelAdvantages.map((item) => (
-              <div
-                key={item.title}
-                className="bg-white border border-stone p-5 text-center card-luxury"
-              >
-                <h3 className="text-xs tracking-[0.12em] uppercase font-semibold text-charcoal mb-2">
+          <div className="text-center mb-12">
+            <EditorialHeading italic="Rooms" subtitle="Spacious and Affordable" align="center" />
+            <p className="mt-4 text-sm text-muted italic font-serif">
+              Enjoy your stay at Victoria Hotel Apartments
+            </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {hotelAdvantages.slice(0, 5).map((item) => (
+              <div key={item.title} className="feature-tile p-5 text-center">
+                <h3 className="text-[0.65rem] tracking-[0.15em] uppercase font-semibold text-charcoal mb-2">
                   {item.title}
                 </h3>
                 <p className="text-xs text-muted leading-relaxed">{item.description}</p>
@@ -94,15 +71,25 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="bg-charcoal text-white py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 lg:py-24 overflow-hidden">
+        <Image
+          src="/images/gallery/lobby/02.webp"
+          alt=""
+          fill
+          className="object-cover"
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-charcoal/75" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-            <div>
-              <p className="section-label text-bronze-light mb-3">Special Offer</p>
-              <h2 className="font-serif text-4xl lg:text-5xl font-normal mb-4 leading-tight">
+            <div className="glass-dark rounded-2xl p-8 lg:p-10">
+              <p className="text-[0.65rem] tracking-[0.3em] uppercase text-bronze-light mb-4 font-semibold">
+                Special Offer
+              </p>
+              <h2 className="font-serif text-4xl lg:text-5xl font-light mb-4 leading-tight text-white tracking-tight">
                 Get 10% Off Today
               </h2>
-              <p className="text-white/70 leading-relaxed max-w-md">
+              <p className="text-white/60 leading-relaxed max-w-md">
                 When you book directly through our reservations team or
                 website. Skip the OTAs — best rates, instant confirmation,
                 and personal service.
@@ -120,28 +107,33 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-20 lg:py-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-          <SectionHeading
-            label="Rooms"
-            title="Offering You A Stunning Place To Relax"
-            subtitle="Comfortable suites and apartments designed for business trips, family holidays, and extended stays in Addis Ababa."
+      <section className="py-24 lg:py-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 text-center">
+          <EditorialHeading
+            italic="Offering You"
+            emphasis="A Stunning"
+            suffix="Place To Relax"
+            subtitle="Rooms & Suites"
             align="center"
           />
+          <p className="mt-6 text-muted max-w-2xl mx-auto leading-relaxed">
+            Comfortable suites and apartments designed for business trips, family
+            holidays, and extended stays in Addis Ababa.
+          </p>
         </div>
         <div className="space-y-0">
           {roomTypes.filter((r) => r.featured).map((room, i) => (
             <RoomShowcase key={room.id} room={room} index={i} />
           ))}
         </div>
-        <div className="text-center mt-12">
+        <div className="text-center mt-14">
           <Button href="/rooms" variant="outline">
             View All Rooms
           </Button>
         </div>
       </section>
 
-      <section className="py-20 lg:py-28 bg-warm-gray">
+      <section className="py-24 lg:py-32 bg-warm-gray/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -161,37 +153,26 @@ export default async function HomePage() {
                 About Victoria
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-8">
-              <div className="text-center p-8 bg-white border border-stone">
-                <p className="stat-number">{totalRooms}</p>
-                <p className="text-xs tracking-[0.2em] uppercase text-muted mt-2">
-                  Spacious Rooms
-                </p>
-              </div>
-              <div className="text-center p-8 bg-white border border-stone">
-                <p className="stat-number">1</p>
-                <p className="text-xs tracking-[0.2em] uppercase text-muted mt-2">
-                  Dining Restaurant
-                </p>
-              </div>
-              <div className="text-center p-8 bg-white border border-stone">
-                <p className="stat-number">{siteSettings.africanUnionDistanceMin}</p>
-                <p className="text-xs tracking-[0.2em] uppercase text-muted mt-2">
-                  Min From African Union
-                </p>
-              </div>
-              <div className="text-center p-8 bg-white border border-stone">
-                <p className="stat-number">{siteSettings.airportDistanceMin}</p>
-                <p className="text-xs tracking-[0.2em] uppercase text-muted mt-2">
-                  Min From Airport
-                </p>
-              </div>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { value: totalRooms, label: "Spacious Rooms" },
+                { value: 1, label: "Dining Restaurant" },
+                { value: siteSettings.africanUnionDistanceMin, label: "Min From African Union" },
+                { value: siteSettings.airportDistanceMin, label: "Min From Airport" },
+              ].map((stat) => (
+                <div key={stat.label} className="glass-card rounded-2xl text-center p-8">
+                  <p className="stat-number">{stat.value}</p>
+                  <p className="text-[0.6rem] tracking-[0.2em] uppercase text-muted mt-2">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 lg:py-20">
+      <section className="py-20 lg:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading
             label="Your Second Home"
@@ -204,56 +185,64 @@ export default async function HomePage() {
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-2">
-        <div className="relative min-h-[400px]">
+        <div className="relative min-h-[420px] group overflow-hidden">
           <Image
             src="/images/gallery/recreation/04.webp"
             alt="Gym and recreation"
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-charcoal/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-transparent" />
           <div className="absolute inset-0 flex flex-col justify-end p-10 lg:p-14">
-            <Dumbbell className="w-8 h-8 text-bronze-light mb-4" />
-            <h3 className="font-serif text-3xl text-white mb-3">Gym & Recreation</h3>
-            <p className="text-white/70 mb-6 max-w-sm leading-relaxed">
-              Stay healthy and fit while enjoying luxury at our place.
-            </p>
-            <Link
-              href="/facilities"
-              className="text-xs tracking-[0.2em] uppercase font-semibold text-white hover:text-bronze-light transition-colors inline-flex items-center gap-2"
-            >
-              Learn More <ArrowRight className="w-4 h-4" />
-            </Link>
+            <div className="glass-dark rounded-2xl p-6 lg:p-8 max-w-sm">
+              <Dumbbell className="w-7 h-7 text-bronze-light mb-4" />
+              <h3 className="font-serif text-2xl lg:text-3xl font-light text-white mb-3 tracking-tight">
+                Gym & Recreation
+              </h3>
+              <p className="text-white/60 mb-5 leading-relaxed text-sm">
+                Stay healthy and fit while enjoying luxury at our place.
+              </p>
+              <Link
+                href="/facilities"
+                className="text-[0.65rem] tracking-[0.2em] uppercase font-semibold text-white/80 hover:text-white transition-colors inline-flex items-center gap-2"
+              >
+                Learn More <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
         </div>
-        <div className="relative min-h-[400px]">
+        <div className="relative min-h-[420px] group overflow-hidden">
           <Image
             src="/images/gallery/lobby/04.webp"
             alt="Work and meeting space"
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-charcoal/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-transparent" />
           <div className="absolute inset-0 flex flex-col justify-end p-10 lg:p-14">
-            <Briefcase className="w-8 h-8 text-bronze-light mb-4" />
-            <h3 className="font-serif text-3xl text-white mb-3">Work & Meeting Space</h3>
-            <p className="text-white/70 mb-6 max-w-sm leading-relaxed">
-              Work. Relax at our hotel apartment with dedicated workspace and
-              high-speed connectivity.
-            </p>
-            <Link
-              href="/amenities"
-              className="text-xs tracking-[0.2em] uppercase font-semibold text-white hover:text-bronze-light transition-colors inline-flex items-center gap-2"
-            >
-              Learn More <ArrowRight className="w-4 h-4" />
-            </Link>
+            <div className="glass-dark rounded-2xl p-6 lg:p-8 max-w-sm">
+              <Briefcase className="w-7 h-7 text-bronze-light mb-4" />
+              <h3 className="font-serif text-2xl lg:text-3xl font-light text-white mb-3 tracking-tight">
+                Work & Meeting Space
+              </h3>
+              <p className="text-white/60 mb-5 leading-relaxed text-sm">
+                Work. Relax at our hotel apartment with dedicated workspace and
+                high-speed connectivity.
+              </p>
+              <Link
+                href="/amenities"
+                className="text-[0.65rem] tracking-[0.2em] uppercase font-semibold text-white/80 hover:text-white transition-colors inline-flex items-center gap-2"
+              >
+                Learn More <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="py-20 bg-charcoal text-white">
+      <section className="py-24 bg-charcoal text-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="relative aspect-[4/3] overflow-hidden">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
             <Image
               src="/images/gallery/restaurant/01.webp"
               alt="Restaurant dining"
@@ -262,11 +251,11 @@ export default async function HomePage() {
             />
           </div>
           <div>
-            <UtensilsCrossed className="w-8 h-8 text-bronze-light mb-4" />
-            <h2 className="font-serif text-4xl font-normal mb-4">
+            <UtensilsCrossed className="w-7 h-7 text-bronze-light mb-4" />
+            <h2 className="font-serif text-4xl font-light mb-4 tracking-tight">
               Lobby Café & Restaurant
             </h2>
-            <p className="text-white/70 leading-relaxed mb-6">
+            <p className="text-white/55 leading-relaxed mb-6">
               A meticulously crafted menu ready to serve you excellent
               cuisine. Complimentary breakfast for all direct-booking guests.
               Our cozy rooftop lounge offers a picturesque view of the city.
@@ -278,20 +267,20 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-20 lg:py-28">
+      <section className="py-24 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading
             label="Testimonials"
             title="Guest Reviews"
             align="center"
-            className="mb-12"
+            className="mb-14"
           />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {reviews.map((review) => (
               <ReviewCard key={review.id} review={review} />
             ))}
           </div>
-          <div className="text-center mt-10">
+          <div className="text-center mt-12">
             <Button href="/reviews" variant="outline">
               Read All Reviews
             </Button>
@@ -299,7 +288,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-20 lg:py-28 bg-warm-gray">
+      <section className="py-24 lg:py-32 bg-warm-gray/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -335,7 +324,7 @@ export default async function HomePage() {
                 Get Directions
               </Button>
             </div>
-            <div className="aspect-[4/3] bg-stone overflow-hidden">
+            <div className="aspect-[4/3] rounded-2xl overflow-hidden glass-card">
               <iframe
                 title="Victoria Hotel Apartment location"
                 src={`https://www.openstreetmap.org/export/embed.html?bbox=${siteSettings.longitude - 0.02}%2C${siteSettings.latitude - 0.02}%2C${siteSettings.longitude + 0.02}%2C${siteSettings.latitude + 0.02}&layer=mapnik&marker=${siteSettings.latitude}%2C${siteSettings.longitude}`}
@@ -347,18 +336,30 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-20 lg:py-28 bg-charcoal text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="section-label text-bronze-light mb-4">Reservations</p>
-          <h2 className="font-serif text-4xl lg:text-5xl font-normal mb-6">
+      <QuoteCta quote="Why miss home when you can stay with us?" href="/book" buttonLabel="Book Your Stay" />
+
+      <section className="relative py-24 lg:py-32 overflow-hidden">
+        <Image
+          src="/images/gallery/property/01.webp"
+          alt=""
+          fill
+          className="object-cover"
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-charcoal/80" />
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-[0.65rem] tracking-[0.3em] uppercase text-bronze-light mb-4 font-semibold">
+            Reservations
+          </p>
+          <h2 className="font-serif text-4xl lg:text-5xl font-light mb-6 text-white tracking-tight">
             Ready To Book Your Stay?
           </h2>
-          <p className="text-white/60 mb-10 max-w-lg mx-auto leading-relaxed">
+          <p className="text-white/50 mb-10 max-w-lg mx-auto leading-relaxed">
             Check real-time availability and secure the best direct rate —
             no middleman, no hidden fees.
           </p>
           <div className="max-w-3xl mx-auto">
-            <BookingWidget variant="inline" />
+            <BookingWidget variant="hero" />
           </div>
         </div>
       </section>

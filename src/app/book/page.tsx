@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { BookingWidget } from "@/components/booking/booking-widget";
+import { PageHero } from "@/components/ui/page-hero";
 
 export const metadata: Metadata = {
   title: "Book Your Stay",
@@ -12,28 +12,17 @@ export const metadata: Metadata = {
 export default function BookPage() {
   return (
     <>
-      {/* Hyatt-style booking hero */}
-      <section className="relative bg-charcoal text-white pt-8 pb-32 lg:pb-40 -mt-16 lg:-mt-[6.25rem]">
-        <Image
-          src="/images/gallery/lobby/05.webp"
-          alt=""
-          fill
-          className="object-cover opacity-30"
-        />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 lg:pt-36">
-          <p className="text-bronze-light text-xs tracking-[0.25em] uppercase mb-3">
-            Reservations
-          </p>
-          <h1 className="font-serif text-4xl lg:text-5xl font-normal mb-3">
-            Book Your Stay
-          </h1>
-          <p className="text-white/60 max-w-lg">
-            Complete your reservation in 4 simple steps. All prices include
-            15% V.A.T.
-          </p>
-        </div>
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 mt-10">
-          <BookingWidget variant="hero" />
+      <PageHero
+        image="/images/gallery/lobby/05.webp"
+        imageAlt="Book your stay"
+        label="Reservations"
+        title="Book Your Stay"
+        subtitle="Complete your reservation in 4 simple steps. All prices include 15% V.A.T."
+      />
+
+      <section className="py-8 lg:py-10 bg-warm-gray/80 -mt-8 relative z-10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <BookingWidget variant="inline" />
         </div>
       </section>
 

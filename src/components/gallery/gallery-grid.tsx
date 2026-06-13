@@ -63,10 +63,10 @@ export function GalleryGrid({ categories, showFilters = true }: GalleryGridProps
         <div className="flex flex-wrap gap-2 mb-10">
           <button
             onClick={() => setFilter("all")}
-            className={`px-4 py-2 text-xs tracking-[0.15em] uppercase font-medium border transition-colors ${
+            className={`px-5 py-2.5 text-[0.65rem] tracking-[0.15em] uppercase font-medium rounded-full transition-all duration-300 ${
               filter === "all"
-                ? "bg-charcoal text-white border-charcoal"
-                : "border-stone text-muted hover:border-charcoal hover:text-charcoal"
+                ? "bg-charcoal text-white"
+                : "glass-card text-muted hover:text-charcoal"
             }`}
           >
             All
@@ -75,10 +75,10 @@ export function GalleryGrid({ categories, showFilters = true }: GalleryGridProps
             <button
               key={cat.id}
               onClick={() => setFilter(cat.id)}
-              className={`px-4 py-2 text-xs tracking-[0.15em] uppercase font-medium border transition-colors ${
+              className={`px-5 py-2.5 text-[0.65rem] tracking-[0.15em] uppercase font-medium rounded-full transition-all duration-300 ${
                 filter === cat.id
-                  ? "bg-charcoal text-white border-charcoal"
-                  : "border-stone text-muted hover:border-charcoal hover:text-charcoal"
+                  ? "bg-charcoal text-white"
+                  : "glass-card text-muted hover:text-charcoal"
               }`}
             >
               {cat.label}
@@ -93,7 +93,7 @@ export function GalleryGrid({ categories, showFilters = true }: GalleryGridProps
             key={img.id}
             type="button"
             onClick={() => openLightbox(index)}
-            className={`relative overflow-hidden group cursor-pointer ${
+            className={`relative overflow-hidden group cursor-pointer rounded-xl ${
               index % 7 === 0 ? "md:col-span-2 md:row-span-2 aspect-square" : "aspect-square"
             }`}
           >

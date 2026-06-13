@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageHero } from "@/components/ui/page-hero";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { hotelAdvantages } from "@/lib/content";
 import { amenitiesList } from "@/lib/mock-data";
@@ -35,18 +36,14 @@ const iconMap: Record<string, LucideIcon> = {
 export default function AmenitiesPage() {
   return (
     <>
-      <section className="bg-charcoal text-white pt-28 pb-16 -mt-16 lg:-mt-[6.25rem]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="section-label text-bronze-light mb-3">Amenities</p>
-          <h1 className="font-serif text-4xl lg:text-5xl font-normal mb-4">
-            Included With Every Stay
-          </h1>
-          <p className="text-white/60 max-w-xl leading-relaxed">
-            From complimentary breakfast to 24-hour security — every detail is
-            designed to make your stay effortless and memorable.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        image="/images/gallery/recreation/02.webp"
+        imageAlt="Hotel amenities"
+        editorial
+        editorialTitle="Amenities"
+        brandName="Victoria Hotel Apartments"
+        tagline="Included with every stay"
+      />
 
       <section className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

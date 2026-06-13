@@ -3,7 +3,7 @@ import Link from "next/link";
 import { type ButtonHTMLAttributes, type ReactNode } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "light";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "light" | "glass";
   size?: "sm" | "md" | "lg";
   href?: string;
   children: ReactNode;
@@ -11,14 +11,17 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants = {
   primary:
-    "bg-charcoal hover:bg-charcoal-light text-white tracking-wide uppercase text-xs font-semibold",
+    "bg-charcoal hover:bg-charcoal-light text-white tracking-[0.15em] uppercase text-xs font-semibold rounded-full",
   secondary:
-    "bg-bronze hover:bg-bronze-dark text-white tracking-wide uppercase text-xs font-semibold",
+    "bg-bronze hover:bg-bronze-dark text-white tracking-[0.15em] uppercase text-xs font-semibold rounded-full",
   outline:
-    "border border-charcoal text-charcoal hover:bg-charcoal hover:text-white tracking-wide uppercase text-xs font-semibold",
-  ghost: "text-charcoal hover:text-bronze tracking-wide uppercase text-xs font-semibold",
+    "border border-charcoal/20 text-charcoal hover:bg-charcoal hover:text-white hover:border-charcoal tracking-[0.15em] uppercase text-xs font-semibold rounded-full backdrop-blur-sm",
+  ghost:
+    "text-charcoal hover:text-bronze tracking-[0.15em] uppercase text-xs font-semibold",
   light:
-    "border border-white/60 text-white hover:bg-white hover:text-charcoal tracking-wide uppercase text-xs font-semibold",
+    "border border-white/30 text-white hover:bg-white hover:text-charcoal tracking-[0.15em] uppercase text-xs font-semibold rounded-full backdrop-blur-sm bg-white/5",
+  glass:
+    "glass-light text-white hover:bg-white/20 tracking-[0.15em] uppercase text-xs font-semibold rounded-full",
 };
 
 const sizes = {

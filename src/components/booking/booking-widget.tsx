@@ -31,14 +31,14 @@ export function BookingWidget({
   }
 
   const isHero = variant === "hero";
+  const isInline = variant === "inline";
 
   return (
     <div
       className={cn(
-        "booking-bar",
-        isHero && "rounded-none lg:rounded-sm",
-        variant === "inline" && "rounded-sm",
-        variant === "sticky" && "rounded-sm shadow-lg",
+        isHero ? "booking-bar" : "booking-bar-light",
+        "rounded-2xl overflow-hidden",
+        variant === "sticky" && "shadow-lg",
         className
       )}
     >
@@ -81,7 +81,12 @@ export function BookingWidget({
         </div>
         <button
           onClick={handleSearch}
-          className="bg-charcoal hover:bg-bronze-dark text-white text-xs tracking-[0.2em] uppercase font-semibold px-8 py-5 lg:py-0 transition-colors duration-300"
+          className={cn(
+            "text-xs tracking-[0.2em] uppercase font-semibold px-8 py-5 lg:py-0 transition-all duration-300",
+            isHero || isInline
+              ? "bg-white/15 hover:bg-bronze text-white border-t lg:border-t-0 lg:border-l border-white/10 hover:border-bronze/30"
+              : "bg-charcoal hover:bg-bronze-dark text-white"
+          )}
         >
           Check Rates
         </button>

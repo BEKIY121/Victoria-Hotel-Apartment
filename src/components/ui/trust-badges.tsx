@@ -14,10 +14,10 @@ export function TrustBadges() {
       {badges.map((badge) => (
         <div
           key={badge.platform}
-          className="trust-badge flex items-center gap-4 p-5"
+          className="trust-badge flex items-center gap-4 p-5 rounded-2xl"
         >
           <div className="text-center min-w-[3.5rem]">
-            <p className="font-serif text-3xl text-bronze leading-none">
+            <p className="font-serif text-3xl text-gold-gradient leading-none font-light">
               {badge.score}
             </p>
           </div>

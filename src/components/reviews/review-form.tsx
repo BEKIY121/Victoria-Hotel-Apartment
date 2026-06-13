@@ -49,7 +49,7 @@ export function ReviewForm({ rooms }: { rooms: RoomOption[] }) {
 
   if (sent) {
     return (
-      <div className="max-w-xl mx-auto border border-stone bg-white p-6 text-center">
+      <div className="max-w-xl mx-auto form-glass text-center">
         <p className="font-medium">Thank you for your review</p>
         <p className="text-sm text-muted mt-2">
           It will appear on the site once approved by our team.
@@ -61,7 +61,7 @@ export function ReviewForm({ rooms }: { rooms: RoomOption[] }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-xl mx-auto border border-stone bg-white p-6 space-y-3"
+      className="max-w-xl mx-auto form-glass space-y-3"
     >
       <h3 className="text-xs tracking-[0.15em] uppercase text-muted font-semibold">
         Write a Review
@@ -71,19 +71,19 @@ export function ReviewForm({ rooms }: { rooms: RoomOption[] }) {
         placeholder="Your name *"
         value={form.name}
         onChange={(e) => setForm({ ...form, name: e.target.value })}
-        className="w-full px-4 py-3 border border-stone text-sm"
+        className="input-modern"
       />
       <input
         required
         placeholder="Country *"
         value={form.country}
         onChange={(e) => setForm({ ...form, country: e.target.value })}
-        className="w-full px-4 py-3 border border-stone text-sm"
+        className="input-modern"
       />
       <select
         value={form.roomTypeId}
         onChange={(e) => setForm({ ...form, roomTypeId: e.target.value })}
-        className="w-full px-4 py-3 border border-stone text-sm"
+        className="input-modern"
       >
         <option value="">Room stayed in (optional)</option>
         {rooms.map((r) => (
@@ -97,7 +97,7 @@ export function ReviewForm({ rooms }: { rooms: RoomOption[] }) {
         <select
           value={form.rating}
           onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })}
-          className="w-full px-4 py-3 border border-stone text-sm"
+          className="input-modern"
         >
           {[5, 4, 3, 2, 1].map((n) => (
             <option key={n} value={n}>
@@ -112,7 +112,7 @@ export function ReviewForm({ rooms }: { rooms: RoomOption[] }) {
         placeholder="Tell us about your stay *"
         value={form.text}
         onChange={(e) => setForm({ ...form, text: e.target.value })}
-        className="w-full px-4 py-3 border border-stone text-sm"
+        className="input-modern"
       />
       {error && <p className="text-sm text-red-600">{error}</p>}
       <Button type="submit" disabled={loading} className="w-full">

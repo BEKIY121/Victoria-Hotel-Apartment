@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageHero } from "@/components/ui/page-hero";
 import { BookingWidget } from "@/components/booking/booking-widget";
 import {
   getRoomBySlug,
@@ -41,25 +42,13 @@ export default async function RoomDetailPage({ params }: Props) {
 
   return (
     <>
-      <section className="relative min-h-[60vh] flex items-end -mt-16 lg:-mt-[6.25rem]">
-        <Image
-          src={room.images[0]}
-          alt={room.name}
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/30 to-transparent" />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-12">
-          <p className="section-label text-bronze-light mb-3">Room</p>
-          <h1 className="font-serif text-4xl lg:text-6xl font-normal text-white mb-4">
-            {room.name}
-          </h1>
-          <p className="text-white/70 max-w-xl leading-relaxed">
-            {room.shortDescription}
-          </p>
-        </div>
-      </section>
+      <PageHero
+        image={room.images[0]}
+        imageAlt={room.name}
+        label="Room"
+        title={room.name}
+        subtitle={room.shortDescription}
+      />
 
       <section className="py-12 bg-warm-gray">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">

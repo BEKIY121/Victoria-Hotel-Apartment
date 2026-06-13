@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 export function ContactForm() {
-  const [form, setForm] = useState({    name: "",
+  const [form, setForm] = useState({
+    name: "",
     email: "",
     phone: "",
     message: "",
@@ -40,7 +41,7 @@ export function ContactForm() {
 
   if (sent) {
     return (
-      <div className="mt-10 border border-stone bg-white p-6">
+      <div className="mt-10 form-glass">
         <p className="font-medium">Message sent</p>
         <p className="text-sm text-muted mt-2">
           Thank you — we will reply to your email shortly.
@@ -57,8 +58,8 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-10 space-y-3 border border-stone bg-white p-6">
-      <h3 className="text-xs tracking-[0.15em] uppercase text-muted font-semibold">
+    <form onSubmit={handleSubmit} className="mt-10 form-glass space-y-3">
+      <h3 className="text-[0.65rem] tracking-[0.2em] uppercase text-muted font-semibold">
         Send a Message
       </h3>
       <input
@@ -66,7 +67,7 @@ export function ContactForm() {
         placeholder="Your name *"
         value={form.name}
         onChange={(e) => setForm({ ...form, name: e.target.value })}
-        className="w-full px-4 py-3 border border-stone text-sm"
+        className="input-modern"
       />
       <input
         required
@@ -74,13 +75,13 @@ export function ContactForm() {
         placeholder="Email *"
         value={form.email}
         onChange={(e) => setForm({ ...form, email: e.target.value })}
-        className="w-full px-4 py-3 border border-stone text-sm"
+        className="input-modern"
       />
       <input
         placeholder="Phone / WhatsApp"
         value={form.phone}
         onChange={(e) => setForm({ ...form, phone: e.target.value })}
-        className="w-full px-4 py-3 border border-stone text-sm"
+        className="input-modern"
       />
       <textarea
         required
@@ -88,7 +89,7 @@ export function ContactForm() {
         placeholder="How can we help? *"
         value={form.message}
         onChange={(e) => setForm({ ...form, message: e.target.value })}
-        className="w-full px-4 py-3 border border-stone text-sm"
+        className="input-modern resize-none"
       />
       {error && <p className="text-sm text-red-600">{error}</p>}
       <Button type="submit" disabled={loading} className="w-full">

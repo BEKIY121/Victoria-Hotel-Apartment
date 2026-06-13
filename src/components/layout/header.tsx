@@ -43,16 +43,14 @@ export function Header({ roomNav }: HeaderProps) {
     <header
       className={cn(
         "sticky top-0 z-50 transition-all duration-500",
-        transparent
-          ? "bg-transparent border-b border-white/10"
-          : "bg-white/98 backdrop-blur-md border-b border-stone shadow-sm"
+        transparent ? "glass-nav" : "glass-nav-solid"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+        <div className="flex items-center justify-between h-16 lg:h-[4.5rem]">
           <Logo priority={isHome} />
 
-          <nav className="hidden lg:flex items-center gap-10">
+          <nav className="hidden lg:flex items-center gap-8 xl:gap-10">
             {navLinks.map((link) =>
               link.hasDropdown ? (
                 <div
@@ -64,33 +62,33 @@ export function Header({ roomNav }: HeaderProps) {
                   <Link
                     href={link.href}
                     className={cn(
-                      "flex items-center gap-1 text-xs tracking-[0.15em] uppercase font-medium transition-colors",
+                      "flex items-center gap-1 text-[0.65rem] tracking-[0.2em] uppercase font-medium transition-colors duration-300",
                       pathname.startsWith("/rooms")
-                        ? "text-bronze"
+                        ? "text-bronze-light"
                         : transparent
-                          ? "text-white/90 hover:text-white"
-                          : "text-charcoal hover:text-bronze"
+                          ? "text-white/85 hover:text-white"
+                          : "text-charcoal/80 hover:text-bronze"
                     )}
                   >
                     {link.label}
-                    <ChevronDown className="w-3 h-3" />
+                    <ChevronDown className="w-3 h-3 opacity-60" />
                   </Link>
                   {roomsOpen && (
-                    <div className="absolute top-full left-0 pt-2 w-56 animate-fade-up">
-                      <div className="bg-white shadow-xl border border-stone py-2">
+                    <div className="absolute top-full left-0 pt-3 w-60 animate-fade-up">
+                      <div className="glass-dark rounded-xl py-2 overflow-hidden">
                         {roomNav.map((room) => (
                           <Link
                             key={room.slug}
                             href={`/rooms/${room.slug}`}
-                            className="block px-5 py-2.5 text-sm text-charcoal hover:bg-warm-gray hover:text-bronze transition-colors"
+                            className="block px-5 py-2.5 text-sm text-white/80 hover:bg-white/8 hover:text-white transition-colors"
                           >
                             {room.name}
                           </Link>
                         ))}
-                        <div className="border-t border-stone mt-1 pt-1">
+                        <div className="border-t border-white/10 mt-1 pt-1">
                           <Link
                             href="/rooms"
-                            className="block px-5 py-2.5 text-xs tracking-wider uppercase text-bronze font-medium"
+                            className="block px-5 py-2.5 text-[0.65rem] tracking-[0.2em] uppercase text-bronze-light font-semibold hover:text-white transition-colors"
                           >
                             View All Rooms
                           </Link>
@@ -104,12 +102,12 @@ export function Header({ roomNav }: HeaderProps) {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "text-xs tracking-[0.15em] uppercase font-medium transition-colors",
+                    "text-[0.65rem] tracking-[0.2em] uppercase font-medium transition-colors duration-300",
                     pathname === link.href
-                      ? "text-bronze"
+                      ? "text-bronze-light"
                       : transparent
-                        ? "text-white/90 hover:text-white"
-                        : "text-charcoal hover:text-bronze"
+                        ? "text-white/85 hover:text-white"
+                        : "text-charcoal/80 hover:text-bronze"
                   )}
                 >
                   {link.label}
@@ -130,26 +128,26 @@ export function Header({ roomNav }: HeaderProps) {
 
           <button
             className={cn(
-              "lg:hidden p-2",
-              transparent ? "text-white" : "text-charcoal"
+              "lg:hidden p-2 rounded-full transition-colors",
+              transparent ? "text-white hover:bg-white/10" : "text-charcoal hover:bg-charcoal/5"
             )}
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden bg-white border-t border-stone animate-fade-up">
+        <div className="lg:hidden glass border-t border-white/10 animate-fade-up">
           <nav className="flex flex-col px-4 py-4">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="px-4 py-3.5 text-xs tracking-[0.15em] uppercase font-medium text-charcoal border-b border-stone last:border-0 hover:text-bronze"
+                className="px-4 py-3.5 text-[0.65rem] tracking-[0.2em] uppercase font-medium text-charcoal border-b border-stone/60 last:border-0 hover:text-bronze transition-colors"
               >
                 {link.label}
               </Link>

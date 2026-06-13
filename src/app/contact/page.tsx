@@ -8,6 +8,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageHero } from "@/components/ui/page-hero";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { ContactForm } from "@/components/contact/contact-form";
 import { getSiteSettings } from "@/lib/data/settings";
@@ -28,18 +29,13 @@ export default async function ContactPage() {
 
   return (
     <>
-      <section className="bg-charcoal text-white pt-28 pb-16 -mt-16 lg:-mt-[6.25rem]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="section-label text-bronze-light mb-3">Contact</p>
-          <h1 className="font-serif text-4xl lg:text-5xl font-normal">
-            We Are Reachable
-          </h1>
-          <p className="text-white/60 mt-4 max-w-lg">
-            24 hours, 7 days a week. Send us a message, call directly, or find
-            us on the map.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        image="/images/gallery/lobby/01.webp"
+        imageAlt="Contact Victoria Hotel"
+        label="Contact"
+        title="We Are Reachable"
+        subtitle="24 hours, 7 days a week. Send us a message, call directly, or find us on the map."
+      />
 
       <section className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

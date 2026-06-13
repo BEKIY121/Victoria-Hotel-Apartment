@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ReviewCard } from "@/components/reviews/review-card";
 import { ReviewForm } from "@/components/reviews/review-form";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { PageHero } from "@/components/ui/page-hero";
 import { TrustBadges } from "@/components/ui/trust-badges";
 import { Button } from "@/components/ui/button";
 import { getApprovedReviews, getAverageRating } from "@/lib/data/reviews";
@@ -27,18 +28,18 @@ export default async function ReviewsPage() {
 
   return (
     <>
-      <section className="bg-charcoal text-white pt-28 pb-16 -mt-16 lg:-mt-[6.25rem]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="section-label text-bronze-light mb-3">Testimonials</p>
-          <h1 className="font-serif text-4xl lg:text-5xl font-normal mb-4">
-            Guest Reviews
-          </h1>
-          <p className="font-serif text-5xl text-bronze-light">{avgRating}</p>
-          <p className="text-white/50 text-sm mt-2">
-            Based on {reviews.length} verified reviews
-          </p>
-        </div>
-      </section>
+      <PageHero
+        image="/images/gallery/lobby/02.webp"
+        imageAlt="Guest reviews"
+        label="Testimonials"
+        title="Guest Reviews"
+        align="center"
+      >
+        <p className="font-serif text-5xl text-bronze-light mt-6 font-light">{avgRating}</p>
+        <p className="text-white/50 text-sm mt-2">
+          Based on {reviews.length} verified reviews
+        </p>
+      </PageHero>
 
       <section className="py-12 bg-warm-gray">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

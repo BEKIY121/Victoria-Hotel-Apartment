@@ -41,7 +41,7 @@ const STEPS = [
 ];
 
 const inputClass =
-  "w-full px-4 py-3 border border-stone bg-white text-charcoal text-sm focus:outline-none focus:border-charcoal";
+  "input-modern text-sm";
 
 function BookingFlowInner() {
   const searchParams = useSearchParams();

@@ -9,7 +9,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
   const roomName = review.roomName;
 
   return (
-    <div className="bg-white border border-stone p-8 card-luxury">
+    <div className="glass-card rounded-2xl p-8 lg:p-9">
       <div className="flex items-center gap-1 mb-5">
         {Array.from({ length: 5 }).map((_, i) => (
           <span
@@ -22,10 +22,10 @@ export function ReviewCard({ review }: ReviewCardProps) {
           </span>
         ))}
       </div>
-      <p className="text-muted leading-relaxed mb-6 font-serif italic text-lg">
+      <p className="text-muted leading-relaxed mb-6 font-serif text-lg font-light italic">
         &ldquo;{review.text}&rdquo;
       </p>
-      <div className="flex items-center justify-between pt-5 border-t border-stone">
+      <div className="flex items-center justify-between pt-5 border-t border-stone/50">
         <div>
           <p className="text-sm font-semibold text-charcoal tracking-wide">
             {review.name}
@@ -34,7 +34,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
         </div>
         <div className="text-right">
           {roomName && (
-            <p className="text-xs tracking-wider uppercase text-bronze">
+            <p className="text-[0.65rem] tracking-[0.15em] uppercase text-bronze">
               {roomName}
             </p>
           )}

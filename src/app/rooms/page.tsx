@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { RoomCard } from "@/components/rooms/room-card";
 import { RoomComparison } from "@/components/rooms/room-comparison";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { PageHero } from "@/components/ui/page-hero";
 import { BookingWidget } from "@/components/booking/booking-widget";
 import { getRoomTypes, getSeasonalPricing } from "@/lib/data/rooms";
 
@@ -19,20 +20,15 @@ export default async function RoomsPage() {
 
   return (
     <>
-      <section className="bg-charcoal text-white pt-28 pb-16 -mt-16 lg:-mt-[6.25rem]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="section-label text-bronze-light mb-3">Accommodation</p>
-          <h1 className="font-serif text-4xl lg:text-5xl font-normal mb-4">
-            Rooms & Suites
-          </h1>
-          <p className="text-white/60 max-w-xl leading-relaxed">
-            {roomTypes.length} room types · From $71/night — select dates
-            for live pricing on our best direct rates.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        image="/images/gallery/property/02.webp"
+        imageAlt="Victoria Hotel rooms"
+        label="Accommodation"
+        title="Rooms & Suites"
+        subtitle={`${roomTypes.length} room types · From $71/night — select dates for live pricing on our best direct rates.`}
+      />
 
-      <section className="py-12 lg:py-16 bg-warm-gray">
+      <section className="py-12 lg:py-16 bg-warm-gray/80">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <BookingWidget variant="inline" />
         </div>

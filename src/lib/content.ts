@@ -8,6 +8,7 @@ export const welcomeContent = {
     "Whether you're here for work or relaxation, Victoria Hotel Apartments promises an experience that balances sophistication with heartfelt hospitality. Discover a home away from home, where every detail is crafted to exceed your expectations.",
   ],
   tagline: "Life is better at Victoria.",
+  homeTagline: "Your home away from home.",
 };
 
 export const aboutContent = {
@@ -71,6 +72,58 @@ export const hotelAdvantages: HotelAdvantage[] = [
     description:
       "Stay healthy during your stay — bright windows and state-of-the-art equipment.",
   },
+];
+
+export const fourTruths = [
+  {
+    title: "Centrally Located",
+    description:
+      "Sarbet, Pushkin Square — minutes from the African Union and Bole International Airport.",
+  },
+  {
+    title: "Well Equipped",
+    description:
+      "Modern rooms with dedicated workspaces, high-speed WiFi, and climate control in every suite.",
+  },
+  {
+    title: "Trained Staff",
+    description:
+      "Led by Ato Tadesse Endeshaw with 22+ years of international hospitality experience.",
+  },
+  {
+    title: "Value for Money",
+    description:
+      "Book direct for the best rates — complimentary breakfast and no hidden fees.",
+  },
+];
+
+export const valuePillars = [
+  {
+    title: "Luxury Rooms",
+    description:
+      "We believe in functioning in harmony with comfort. Every room combines elegant furnishings with thoughtful amenities for a restorative stay.",
+    image: "/images/gallery/property/03.webp",
+  },
+  {
+    title: "Best Food",
+    description:
+      "Everything needed for a memorable experience is available here — from complimentary breakfast to our lobby café and rooftop lounge.",
+    image: "/images/gallery/restaurant/01.webp",
+  },
+  {
+    title: "Quality Service",
+    description:
+      "Quality is our philosophy — every detail is set for your comfort, satisfaction, and a truly memorable experience.",
+    image: "/images/gallery/lobby/04.webp",
+  },
+];
+
+export const aboutGalleryImages = [
+  { src: "/images/gallery/property/01.webp", alt: "Victoria Hotel property" },
+  { src: "/images/gallery/lobby/01.webp", alt: "Victoria Hotel lobby" },
+  { src: "/images/gallery/property/03.webp", alt: "Victoria Hotel suite" },
+  { src: "/images/gallery/recreation/04.webp", alt: "Victoria Hotel gym" },
+  { src: "/images/gallery/restaurant/01.webp", alt: "Victoria Hotel dining" },
 ];
 
 export const facilitiesContent = [
