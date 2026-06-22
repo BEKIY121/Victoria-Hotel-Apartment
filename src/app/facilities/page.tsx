@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { EditorialHeading } from "@/components/ui/editorial-heading";
 import { PageHero } from "@/components/ui/page-hero";
 import { SplitFeatureHeading } from "@/components/ui/split-feature-heading";
+import { ImmersiveBand } from "@/components/ui/immersive-band";
 import { facilitiesContent } from "@/lib/content";
+import { brandImages } from "@/lib/brand-images";
 
 export const metadata: Metadata = {
   title: "Facilities & Amenities",
@@ -28,7 +30,7 @@ export default function FacilitiesPage() {
   return (
     <>
       <PageHero
-        image="/images/gallery/recreation/06.webp"
+        image={brandImages.wellness}
         imageAlt="Victoria Hotel facilities"
         editorial
         editorialTitle="Facilities"
@@ -62,7 +64,7 @@ export default function FacilitiesPage() {
                   }`}
                 >
                   <div
-                    className={`relative aspect-[4/3] overflow-hidden rounded-2xl ${
+                    className={`img-hover-wrap relative aspect-[4/3] overflow-hidden rounded-2xl ${
                       index % 2 === 1 ? "lg:order-2" : ""
                     }`}
                   >
@@ -70,9 +72,10 @@ export default function FacilitiesPage() {
                       src={facility.image}
                       alt={facility.title}
                       fill
-                      className="object-cover"
+                      className="object-cover img-hover-zoom"
                       sizes="(max-width: 1024px) 100vw, 50vw"
                     />
+                    <div className="img-hover-shine" aria-hidden />
                   </div>
                   <div className={index % 2 === 1 ? "lg:order-1" : ""}>
                     <SplitFeatureHeading primary={primary} secondary={secondary} />
@@ -120,6 +123,25 @@ export default function FacilitiesPage() {
           </div>
         </div>
       </section>
+
+      <ImmersiveBand
+        image={brandImages.dining}
+        imageAlt="Victoria Hotel dining"
+        label="Experience"
+        title="Everything you need, under one roof"
+        description="From fitness and dining to 24-hour reception and airport shuttle — Victoria has it all."
+        overlay="warm"
+        parallax
+      >
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Button href="/gallery" variant="secondary" size="lg">
+            View Gallery
+          </Button>
+          <Button href="/book" variant="light" size="lg">
+            Book Your Stay
+          </Button>
+        </div>
+      </ImmersiveBand>
     </>
   );
 }

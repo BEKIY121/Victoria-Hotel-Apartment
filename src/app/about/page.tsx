@@ -5,8 +5,12 @@ import { ArrowRight, Phone, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EditorialHeading } from "@/components/ui/editorial-heading";
 import { PageHero } from "@/components/ui/page-hero";
+import { ModernSection } from "@/components/ui/modern-section";
+import { ImmersiveBand } from "@/components/ui/immersive-band";
+import { BookingWidget } from "@/components/booking/booking-widget";
+import { HoverImage } from "@/components/ui/hover-image";
 import { PhotoStrip } from "@/components/ui/photo-strip";
-import { QuoteCta } from "@/components/ui/quote-cta";
+import { Reveal } from "@/components/ui/reveal";
 import { SplitFeatureHeading } from "@/components/ui/split-feature-heading";
 import { TruthPillars } from "@/components/ui/truth-pillars";
 import {
@@ -17,6 +21,7 @@ import {
   aboutGalleryImages,
   facilitiesContent,
 } from "@/lib/content";
+import { brandImages } from "@/lib/brand-images";
 import { siteSettings } from "@/lib/mock-data";
 
 export const metadata: Metadata = {
@@ -31,7 +36,7 @@ export default function AboutPage() {
   return (
     <>
       <PageHero
-        image="/images/gallery/lobby/01.webp"
+        image={brandImages.exterior}
         imageAlt="Victoria Hotel Apartments"
         editorial
         editorialTitle="About Us"
@@ -39,51 +44,46 @@ export default function AboutPage() {
         tagline={welcomeContent.homeTagline}
       />
 
-      <section className="py-16 lg:py-24">
+      <ModernSection variant="white" className="!py-16 lg:!py-24">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center lg:text-left">
-          <p className="text-muted leading-relaxed mb-6 text-lg">
-            {aboutContent.paragraphs[0]}
-          </p>
-          <p className="font-serif text-2xl text-bronze font-light italic">
-            {welcomeContent.tagline}
-          </p>
-          <div className="mt-10 flex justify-center lg:justify-start">
-            <Button href="/rooms" variant="outline">
-              Explore the Hotel <ArrowRight className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 lg:py-24 bg-warm-gray/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <EditorialHeading
-              italic="Our"
-              emphasis="Hotel"
-              subtitle="Four Truths"
-              align="center"
-            />
-            <p className="mt-6 text-muted max-w-2xl mx-auto leading-relaxed">
-              Visit our beautiful location during any season. Discounts available
-              to long-stay guests — design and comfort combined for your well-being.
+          <Reveal>
+            <p className="text-muted leading-relaxed mb-6 text-lg">
+              {aboutContent.paragraphs[0]}
             </p>
-          </div>
-          <TruthPillars items={fourTruths} />
+            <p className="font-serif text-2xl text-bronze font-light italic">
+              {welcomeContent.tagline}
+            </p>
+            <div className="mt-10 flex justify-center lg:justify-start">
+              <Button href="/rooms" variant="outline">
+                Explore the Hotel <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </Reveal>
         </div>
-      </section>
+      </ModernSection>
 
-      <section className="py-16 lg:py-24">
+      <ImmersiveBand
+        image={brandImages.atrium02}
+        imageAlt="Victoria Hotel atrium"
+        label="Our Promise"
+        title="Four truths we live by"
+        description="Visit our beautiful location during any season. Design and comfort combined for your well-being."
+        size="md"
+        wide
+        parallax
+      >
+        <TruthPillars items={fourTruths} variant="immersive" />
+      </ImmersiveBand>
+
+      <ModernSection variant="accent" className="!py-16 lg:!py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
-            <div className="relative aspect-[4/5] max-w-md mx-auto lg:mx-0 rounded-2xl overflow-hidden">
-              <Image
-                src="/images/gallery/property/01.webp"
-                alt={siteSettings.managerName}
-                fill
-                className="object-cover"
-              />
-            </div>
+            <HoverImage
+              src={brandImages.bedroom}
+              alt={siteSettings.managerName}
+              className="aspect-[4/5] max-w-md mx-auto lg:mx-0 w-full"
+              sizes="(max-width: 1024px) 90vw, 40vw"
+            />
             <div>
               <EditorialHeading italic="Leadership" subtitle="General Manager" />
               <h3 className="font-serif text-3xl font-light text-charcoal mt-4 mb-2 tracking-tight">
@@ -116,14 +116,15 @@ export default function AboutPage() {
                   index % 2 === 1 ? "sm:flex-row-reverse" : ""
                 }`}
               >
-                <div className="relative aspect-square overflow-hidden rounded-2xl">
+                <div className="img-hover-wrap relative aspect-square overflow-hidden rounded-2xl">
                   <Image
                     src={facility.image}
                     alt={facility.title}
                     fill
-                    className="object-cover"
+                    className="object-cover img-hover-zoom"
                     sizes="(max-width: 640px) 100vw, 25vw"
                   />
+                  <div className="img-hover-shine" aria-hidden />
                 </div>
                 <div>
                   <SplitFeatureHeading
@@ -144,9 +145,9 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
-      </section>
+      </ModernSection>
 
-      <section className="py-16 lg:py-24 bg-warm-gray/80">
+      <ModernSection variant="muted" className="!py-16 lg:!py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <EditorialHeading
@@ -164,15 +165,16 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
             {valuePillars.map((pillar) => (
-              <div key={pillar.title} className="value-pillar-card">
-                <div className="relative aspect-[16/10] overflow-hidden">
+              <div key={pillar.title} className="value-pillar-card group">
+                <div className="img-hover-wrap relative aspect-[16/10] overflow-hidden">
                   <Image
                     src={pillar.image}
                     alt={pillar.title}
                     fill
-                    className="object-cover"
+                    className="object-cover img-hover-zoom"
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
+                  <div className="img-hover-shine" aria-hidden />
                 </div>
                 <div className="p-6 lg:p-8">
                   <h3 className="font-serif text-xl font-light text-charcoal mb-3 tracking-tight">
@@ -208,35 +210,31 @@ export default function AboutPage() {
             </Button>
           </div>
         </div>
-      </section>
+      </ModernSection>
 
-      <section className="py-16 lg:py-20">
+      <ModernSection variant="white" decorative={false} className="!py-16 lg:!py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <PhotoStrip images={aboutGalleryImages} />
         </div>
-      </section>
+      </ModernSection>
 
-      <QuoteCta quote="Why miss home when you can stay with us?" />
-
-      <section className="relative py-16 overflow-hidden">
-        <Image
-          src="/images/gallery/property/02.webp"
-          alt=""
-          fill
-          className="object-cover"
-          aria-hidden
-        />
-        <div className="absolute inset-0 bg-charcoal/80" />
-        <div className="relative max-w-2xl mx-auto px-4 text-center text-white">
-          <EditorialHeading italic="Ready" emphasis="to" suffix="Reserve?" align="center" light />
-          <p className="text-white/60 mb-8 mt-6">
-            Book directly for the best rates. All prices include 15% V.A.T.
-          </p>
+      <ImmersiveBand
+        image={brandImages.exterior}
+        imageAlt="Victoria Hotel entrance"
+        label="Reservations"
+        title="Ready to reserve?"
+        description="Book directly for the best rates. All prices include 15% V.A.T."
+        parallax
+      >
+        <div className="flex flex-col items-center gap-6">
           <Button href="/book" variant="secondary" size="lg">
             Reserve Now <ArrowRight className="w-4 h-4" />
           </Button>
+          <div className="max-w-3xl w-full">
+            <BookingWidget variant="hero" />
+          </div>
         </div>
-      </section>
+      </ImmersiveBand>
     </>
   );
 }

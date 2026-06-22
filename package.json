@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "photos": "tsx scripts/optimize-photos.ts",
+    "photos:brand": "tsx scripts/optimize-brand-assets.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { FixedBackground } from "@/components/ui/fixed-background";
 import { cn } from "@/lib/utils";
 import { type ReactNode } from "react";
 
@@ -34,17 +34,17 @@ export function PageHero({
   return (
     <section
       className={cn(
-        "relative min-h-[55vh] lg:min-h-[60vh] flex items-end -mt-16 lg:-mt-[6.25rem] overflow-hidden",
+        "page-hero-section group relative min-h-[55vh] lg:min-h-[62vh] flex items-end -mt-16 lg:-mt-[6.25rem] overflow-hidden isolate",
         className
       )}
     >
-      <Image src={image} alt={imageAlt} fill className="object-cover" priority />
-      <div className="absolute inset-0 page-hero-overlay" />
+      <FixedBackground image={image} alt={imageAlt} parallax />
+      <div className="absolute inset-0 page-hero-overlay z-[1]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-12 lg:pb-16">
         <div
           className={cn(
-            "page-hero-glass max-w-2xl p-8 lg:p-10 animate-fade-up",
+            "page-hero-glass max-w-2xl p-8 lg:p-10 animate-fade-up transition-all duration-500 group-hover:bg-charcoal/55",
             align === "center" && "mx-auto text-center max-w-3xl"
           )}
         >
@@ -61,7 +61,7 @@ export function PageHero({
           ) : (
             <>
               {label && (
-                <p className="text-[0.65rem] tracking-[0.3em] uppercase text-bronze-light mb-4 font-semibold">
+                <p className="text-[0.7rem] tracking-[0.3em] uppercase text-bronze-light mb-4 font-semibold">
                   {label}
                 </p>
               )}
@@ -71,7 +71,7 @@ export function PageHero({
                 </h1>
               )}
               {subtitle && (
-                <p className="mt-4 text-white/60 text-base lg:text-lg leading-relaxed max-w-lg mx-auto">
+                <p className="mt-4 text-white/65 text-base lg:text-lg leading-relaxed max-w-lg">
                   {subtitle}
                 </p>
               )}
@@ -81,7 +81,7 @@ export function PageHero({
         </div>
       </div>
 
-      <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden xl:block">
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden xl:block z-10">
         <span className="vertical-accent">Victoria Hotel</span>
       </div>
     </section>

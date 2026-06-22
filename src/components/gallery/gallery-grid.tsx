@@ -93,7 +93,7 @@ export function GalleryGrid({ categories, showFilters = true }: GalleryGridProps
             key={img.id}
             type="button"
             onClick={() => openLightbox(index)}
-            className={`relative overflow-hidden group cursor-pointer rounded-xl ${
+            className={`relative overflow-hidden group cursor-pointer rounded-xl img-hover-wrap ${
               index % 7 === 0 ? "md:col-span-2 md:row-span-2 aspect-square" : "aspect-square"
             }`}
           >
@@ -101,10 +101,11 @@ export function GalleryGrid({ categories, showFilters = true }: GalleryGridProps
               src={img.url}
               alt={img.title ?? "Victoria Hotel Apartments"}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-cover img-hover-zoom"
               sizes="(max-width: 768px) 50vw, 25vw"
             />
-            <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/30 transition-colors" />
+            <div className="img-hover-shine" aria-hidden />
+            <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/35 transition-colors duration-500" />
           </button>
         ))}
       </div>

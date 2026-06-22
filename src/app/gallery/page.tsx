@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/ui/page-hero";
 import { getGalleryCategories } from "@/lib/data/gallery";
 import { getRoomTypes } from "@/lib/data/rooms";
+import { brandImages } from "@/lib/brand-images";
 
 export const metadata: Metadata = {
   title: "Photo Gallery",
@@ -36,7 +37,7 @@ export default async function GalleryPage() {
   return (
     <>
       <PageHero
-        image="/images/gallery/property/03.webp"
+        image={brandImages.atrium02}
         imageAlt="Victoria Hotel gallery"
         label="Gallery"
         title="Victoria Hotel Apartments"

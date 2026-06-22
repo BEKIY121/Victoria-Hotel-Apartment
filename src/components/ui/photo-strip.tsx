@@ -17,16 +17,17 @@ export function PhotoStrip({ images, className }: PhotoStripProps) {
       {images.map((img) => (
         <div
           key={img.src}
-          className="relative aspect-[4/5] overflow-hidden rounded-xl group"
+          className="img-hover-wrap relative aspect-[4/5] overflow-hidden rounded-xl group"
         >
           <Image
             src={img.src}
             alt={img.alt}
             fill
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            className="object-cover img-hover-zoom"
             sizes="(max-width: 768px) 50vw, 20vw"
           />
-          <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/20 transition-colors duration-500" />
+          <div className="img-hover-shine" aria-hidden />
+          <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/25 transition-colors duration-500" />
         </div>
       ))}
     </div>

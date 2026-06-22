@@ -7,6 +7,7 @@ interface SectionHeadingProps {
   align?: "left" | "center";
   className?: string;
   light?: boolean;
+  animated?: boolean;
 }
 
 export function SectionHeading({
@@ -16,10 +17,12 @@ export function SectionHeading({
   align = "left",
   className,
   light = false,
+  animated = true,
 }: SectionHeadingProps) {
   return (
     <div
       className={cn(
+        "section-heading group",
         align === "center" && "text-center",
         className
       )}
@@ -37,6 +40,16 @@ export function SectionHeading({
       >
         {title}
       </h2>
+      {animated && (
+        <span
+          className={cn(
+            "section-title-accent",
+            align === "center" && "mx-auto",
+            light && "section-title-accent-light"
+          )}
+          aria-hidden
+        />
+      )}
       {subtitle && (
         <p
           className={cn(

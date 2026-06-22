@@ -12,6 +12,7 @@ import { PageHero } from "@/components/ui/page-hero";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { ContactForm } from "@/components/contact/contact-form";
 import { getSiteSettings } from "@/lib/data/settings";
+import { brandImages } from "@/lib/brand-images";
 import { getWhatsAppUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -30,7 +31,7 @@ export default async function ContactPage() {
   return (
     <>
       <PageHero
-        image="/images/gallery/lobby/01.webp"
+        image={brandImages.exterior}
         imageAlt="Contact Victoria Hotel"
         label="Contact"
         title="We Are Reachable"

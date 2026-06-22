@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { RoomType } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ModernSection } from "@/components/ui/modern-section";
 
 interface RoomComparisonProps {
   rooms: RoomType[];
@@ -18,12 +19,13 @@ export function RoomComparison({ rooms }: RoomComparisonProps) {
   ] as const;
 
   return (
-    <section className="py-16 lg:py-20 bg-warm-gray border-t border-stone">
+    <ModernSection variant="muted" className="!py-16 lg:!py-20 border-t border-stone/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="section-label text-bronze mb-2">Compare</p>
-        <h2 className="font-serif text-3xl mb-8">Room Comparison</h2>
+        <h2 className="font-serif text-3xl mb-2">Room Comparison</h2>
+        <span className="section-title-accent block mb-8" aria-hidden />
 
-        <div className="overflow-x-auto bg-white border border-stone">
+        <div className="overflow-x-auto surface-card rounded-2xl border border-stone shadow-elevated">
           <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="bg-stone/30 text-xs uppercase text-muted">
@@ -84,6 +86,6 @@ export function RoomComparison({ rooms }: RoomComparisonProps) {
           </table>
         </div>
       </div>
-    </section>
+    </ModernSection>
   );
 }

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/ui/page-hero";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { hotelAdvantages } from "@/lib/content";
+import { brandImages } from "@/lib/brand-images";
 import { amenitiesList } from "@/lib/mock-data";
 
 export const metadata: Metadata = {
@@ -37,7 +38,7 @@ export default function AmenitiesPage() {
   return (
     <>
       <PageHero
-        image="/images/gallery/recreation/02.webp"
+        image={brandImages.kitchenette}
         imageAlt="Hotel amenities"
         editorial
         editorialTitle="Amenities"

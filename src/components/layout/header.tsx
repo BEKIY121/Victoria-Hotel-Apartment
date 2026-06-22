@@ -62,9 +62,9 @@ export function Header({ roomNav }: HeaderProps) {
                   <Link
                     href={link.href}
                     className={cn(
-                      "flex items-center gap-1 text-[0.65rem] tracking-[0.2em] uppercase font-medium transition-colors duration-300",
+                      "nav-link flex items-center gap-1 text-[0.7rem] tracking-[0.18em] uppercase font-medium transition-colors duration-300",
                       pathname.startsWith("/rooms")
-                        ? "text-bronze-light"
+                        ? "text-bronze-light nav-link-active"
                         : transparent
                           ? "text-white/85 hover:text-white"
                           : "text-charcoal/80 hover:text-bronze"
@@ -102,9 +102,9 @@ export function Header({ roomNav }: HeaderProps) {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "text-[0.65rem] tracking-[0.2em] uppercase font-medium transition-colors duration-300",
+                    "nav-link text-[0.7rem] tracking-[0.18em] uppercase font-medium transition-colors duration-300",
                     pathname === link.href
-                      ? "text-bronze-light"
+                      ? "text-bronze-light nav-link-active"
                       : transparent
                         ? "text-white/85 hover:text-white"
                         : "text-charcoal/80 hover:text-bronze"

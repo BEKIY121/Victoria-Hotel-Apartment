@@ -10,6 +10,10 @@
   --color-bronze: #b8956a;
   --color-bronze-light: #d4b896;
   --color-bronze-dark: #96754a;
+  --color-sage: #4a6b5a;
+  --color-sage-dark: #3a5548;
+  --color-sage-light: #6b8f7a;
+  --color-wood: #8b6914;
   --color-glass-border: rgba(255, 255, 255, 0.12);
   --color-glass-border-dark: rgba(255, 255, 255, 0.08);
   --font-serif: var(--font-cormorant), "Georgia", serif;
@@ -94,8 +98,8 @@ body {
 /* ── Typography ── */
 
 .section-label {
-  font-size: 0.65rem;
-  letter-spacing: 0.3em;
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-bronze);
   font-weight: 600;
@@ -263,9 +267,9 @@ body {
 .page-hero-overlay {
   background: linear-gradient(
     105deg,
-    rgba(15, 15, 15, 0.82) 0%,
-    rgba(15, 15, 15, 0.55) 45%,
-    rgba(15, 15, 15, 0.15) 100%
+    rgba(15, 15, 15, 0.62) 0%,
+    rgba(15, 15, 15, 0.38) 45%,
+    rgba(15, 15, 15, 0.12) 100%
   );
 }
 
@@ -350,14 +354,286 @@ body {
   opacity: 0.5;
 }
 
-/* ── Room showcase ── */
+/* ── Fixed parallax backgrounds (do not scroll with content) ── */
+
+.bg-parallax {
+  background-attachment: scroll;
+  transform: translateZ(0);
+}
+
+@media (min-width: 768px) {
+  .bg-parallax {
+    background-attachment: fixed;
+  }
+}
+
+/* iOS often breaks fixed backgrounds — keep scroll on touch devices */
+@supports (-webkit-touch-callout: none) {
+  .bg-parallax {
+    background-attachment: scroll;
+  }
+}
+
+.immersive-band {
+  transform: translateZ(0);
+}
+
+/* ── Modern plain sections (no photo background) ── */
+
+.modern-section-default {
+  background: var(--color-warm-white);
+}
+
+.modern-section-muted {
+  background: linear-gradient(
+    165deg,
+    var(--color-warm-gray) 0%,
+    var(--color-warm-white) 45%,
+    var(--color-warm-gray) 100%
+  );
+}
+
+.modern-section-white {
+  background: var(--color-warm-white);
+}
+
+.modern-section-accent {
+  background: linear-gradient(
+    135deg,
+    rgba(74, 107, 90, 0.06) 0%,
+    var(--color-warm-white) 50%,
+    rgba(184, 149, 106, 0.08) 100%
+  );
+}
+
+.modern-section-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(184, 149, 106, 0.07) 1px,
+    transparent 0
+  );
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to bottom, black 20%, transparent 95%);
+}
+
+.modern-section-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(72px);
+  opacity: 0.45;
+}
+
+.modern-section-orb-a {
+  width: 280px;
+  height: 280px;
+  top: -80px;
+  right: -60px;
+  background: rgba(184, 149, 106, 0.18);
+  animation: float-orb-a 14s ease-in-out infinite;
+}
+
+.modern-section-orb-b {
+  width: 220px;
+  height: 220px;
+  bottom: -40px;
+  left: -40px;
+  background: rgba(74, 107, 90, 0.14);
+  animation: float-orb-b 18s ease-in-out infinite;
+}
+
+.modern-section-line {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(90%, 48rem);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(184, 149, 106, 0.25),
+    transparent
+  );
+}
+
+.modern-section-intro {
+  background: linear-gradient(
+    180deg,
+    var(--color-warm-white) 0%,
+    rgba(240, 238, 234, 0.5) 100%
+  );
+  border-bottom: 1px solid rgba(228, 224, 216, 0.8);
+}
+
+@keyframes float-orb-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-24px, 16px) scale(1.05);
+  }
+}
+
+@keyframes float-orb-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(20px, -12px) scale(1.08);
+  }
+}
+
+.section-title-accent {
+  display: block;
+  width: 3rem;
+  height: 2px;
+  margin-top: 1.25rem;
+  background: linear-gradient(90deg, var(--color-bronze), transparent);
+  transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.section-heading:hover .section-title-accent,
+.section-heading:focus-within .section-title-accent {
+  width: 5rem;
+}
+
+.section-title-accent-light {
+  background: linear-gradient(90deg, var(--color-bronze-light), transparent);
+}
+
+/* Modern stat / feature cards */
+.modern-stat-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-stone);
+  border-radius: 1.25rem;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.modern-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(184, 149, 106, 0.12);
+  border-color: rgba(184, 149, 106, 0.35);
+}
+
+.modern-panel {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(248, 247, 244, 0.95) 100%
+  );
+  position: relative;
+}
+
+.modern-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 0;
+  background: linear-gradient(180deg, var(--color-bronze), var(--color-sage));
+  transition: height 0.5s ease;
+}
+
+.room-showcase:hover .modern-panel::before {
+  height: 100%;
+}
+
+/* ── Immersive full-bleed bands (legacy img helpers — kept for hovers) ── */
+
+.immersive-bg-wrap {
+  overflow: hidden;
+}
+
+/* ── Image hover motion ── */
+
+.img-hover-wrap {
+  isolation: isolate;
+}
+
+.img-hover-zoom {
+  transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.img-hover-wrap:hover .img-hover-zoom {
+  transform: scale(1.08);
+}
+
+.img-hover-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.9s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.img-hover-wrap:hover .img-hover-shine {
+  transform: translateX(100%);
+}
+
+/* ── Room showcase enhanced hover ── */
 
 .room-showcase-image {
-  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .room-showcase:hover .room-showcase-image {
-  transform: scale(1.06);
+  transform: scale(1.1);
+}
+
+.room-showcase-content {
+  transition: transform 0.5s ease, background-color 0.5s ease;
+}
+
+.room-showcase:hover .room-showcase-content {
+  background-color: var(--color-warm-white);
+}
+
+.room-showcase-badge {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.room-showcase:hover .room-showcase-badge {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Page hero image motion ── */
+
+.page-hero-image {
+  transition: transform 10s ease-out;
+}
+
+.page-hero-section:hover .page-hero-image {
+  transform: scale(1.05);
+}
+
+@keyframes page-hero-ken {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.06);
+  }
+}
+
+.page-hero-ken-burns {
+  animation: page-hero-ken 20s ease-out forwards;
 }
 
 .room-showcase-overlay {
@@ -537,4 +813,118 @@ body {
   background: rgba(15, 15, 15, 0.35);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+}
+
+/* ── Modern surface cards (minimal) ── */
+
+.surface-card {
+  background: white;
+  border: 1px solid var(--color-stone);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.surface-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  border-color: rgba(184, 149, 106, 0.3);
+}
+
+.shadow-elevated {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+.shadow-elevated-lg {
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.16);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--color-bronze-light), var(--color-bronze));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ── Scroll reveal ── */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Marquee strip ── */
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+  width: max-content;
+}
+
+/* ── Nav link underline ── */
+
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link-active::after {
+  width: 100%;
+  left: 0;
+}
+
+/* ── Reduced motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hero-ken-burns,
+  .hero-scroll-dot,
+  .animate-marquee,
+  .animate-fade-up,
+  .animate-fade-in,
+  .modern-section-orb-a,
+  .modern-section-orb-b {
+    animation: none !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .room-showcase-image,
+  .img-hover-zoom,
+  .glass-card,
+  .surface-card,
+  .feature-tile,
+  .trust-badge {
+    transition: none;
+  }
 }

@@ -4,7 +4,10 @@ import { RoomComparison } from "@/components/rooms/room-comparison";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { PageHero } from "@/components/ui/page-hero";
 import { BookingWidget } from "@/components/booking/booking-widget";
+import { ModernSectionIntro } from "@/components/ui/modern-section";
+import { ImmersiveBand } from "@/components/ui/immersive-band";
 import { getRoomTypes, getSeasonalPricing } from "@/lib/data/rooms";
+import { brandImages } from "@/lib/brand-images";
 
 export const metadata: Metadata = {
   title: "Rooms & Suites",
@@ -21,20 +24,20 @@ export default async function RoomsPage() {
   return (
     <>
       <PageHero
-        image="/images/gallery/property/02.webp"
+        image={brandImages.atrium01}
         imageAlt="Victoria Hotel rooms"
         label="Accommodation"
         title="Rooms & Suites"
         subtitle={`${roomTypes.length} room types · From $71/night — select dates for live pricing on our best direct rates.`}
       />
 
-      <section className="py-12 lg:py-16 bg-warm-gray/80">
+      <ModernSectionIntro className="-mt-4">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <BookingWidget variant="inline" />
         </div>
-      </section>
+      </ModernSectionIntro>
 
-      <section className="py-16 lg:py-24">
+      <section className="py-16 lg:py-24 bg-warm-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading
             label="All Rooms"
@@ -55,6 +58,19 @@ export default async function RoomsPage() {
       </section>
 
       <RoomComparison rooms={roomTypes} />
+
+      <ImmersiveBand
+        image={brandImages.suite}
+        imageAlt="Victoria Hotel suite"
+        label="Reservations"
+        title="Find your perfect room"
+        description="Check live availability and secure the best direct rate for your stay in Addis Ababa."
+        parallax
+      >
+        <div className="max-w-3xl mx-auto">
+          <BookingWidget variant="hero" />
+        </div>
+      </ImmersiveBand>
     </>
   );
 }

@@ -6,6 +6,7 @@ import { PageHero } from "@/components/ui/page-hero";
 import { TrustBadges } from "@/components/ui/trust-badges";
 import { Button } from "@/components/ui/button";
 import { getApprovedReviews, getAverageRating } from "@/lib/data/reviews";
+import { brandImages } from "@/lib/brand-images";
 import { getRoomTypes } from "@/lib/data/rooms";
 
 export const metadata: Metadata = {
@@ -29,7 +30,7 @@ export default async function ReviewsPage() {
   return (
     <>
       <PageHero
-        image="/images/gallery/lobby/02.webp"
+        image={brandImages.lobby}
         imageAlt="Guest reviews"
         label="Testimonials"
         title="Guest Reviews"

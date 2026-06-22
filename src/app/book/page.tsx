@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { BookingWidget } from "@/components/booking/booking-widget";
 import { PageHero } from "@/components/ui/page-hero";
+import { brandImages } from "@/lib/brand-images";
 
 export const metadata: Metadata = {
   title: "Book Your Stay",
@@ -13,7 +14,7 @@ export default function BookPage() {
   return (
     <>
       <PageHero
-        image="/images/gallery/lobby/05.webp"
+        image={brandImages.bedroom}
         imageAlt="Book your stay"
         label="Reservations"
         title="Book Your Stay"
